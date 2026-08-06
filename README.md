@@ -43,8 +43,18 @@ By unifying System-Theoretic Process Analysis (STPA) with Failure Mode, Effects,
 
 ---
 
-## 4. Repository Structure
+## 4. Repository Structure & Canonical Specifications
 
+All architecture blueprints, concept papers, SysML v2 models, and specifications for DEAP are hosted centrally in the Single Source of Truth repository: **[DEAP-spec-core](https://github.com/gintatkinson/DEAP-spec-core)**.
+
+### Canonical Specifications (hosted in `DEAP-spec-core`):
+- **Civil Avionic Safety Concept Paper**: [DEAP_FLIGHT_SYSTEMS_SAFETY_CONCEPT_PAPER.md](https://github.com/gintatkinson/DEAP-spec-core/blob/main/docs/architecture/blueprints/DEAP_FLIGHT_SYSTEMS_SAFETY_CONCEPT_PAPER.md)
+- **SysML v2 Textual Safety Model**: [DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.sysml](https://github.com/gintatkinson/DEAP-spec-core/blob/main/docs/architecture/blueprints/DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.sysml)
+- **SysML v2 MATLAB Export Blueprint**: [DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.md](https://github.com/gintatkinson/DEAP-spec-core/blob/main/docs/architecture/blueprints/DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.md)
+- **Safety-Critical Real-Time UI Framework**: [SAFETY_CRITICAL_REALTIME_UI_FRAMEWORK.md](https://github.com/gintatkinson/DEAP-spec-core/blob/main/docs/architecture/blueprints/SAFETY_CRITICAL_REALTIME_UI_FRAMEWORK.md)
+- **Master Specification Sitemap**: [DEAP_SPECIFICATIONS_SITEMAP.md](https://github.com/gintatkinson/DEAP-spec-core/blob/main/docs/architecture/DEAP_SPECIFICATIONS_SITEMAP.md)
+
+### Repository Tree:
 ```
 DEAP-avionic-flight-safety/
 ├── .agents/
@@ -54,11 +64,6 @@ DEAP-avionic-flight-safety/
 │   └── profiles/
 │       ├── spark_ada.md           # SPARK Ada 2014 platform execution profile
 │       └── embedded_c.md          # MISRA-C / ARINC 653 platform execution profile
-├── docs/
-│   └── architecture/
-│       ├── DEAP_FLIGHT_SYSTEMS_SAFETY_CONCEPT_PAPER.md
-│       ├── DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.sysml
-│       └── DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.md
 ├── tests/
 │   └── test_avionic_safety_governance.py   # Automated safety compliance & MBSE test suite
 ├── pyproject.toml                 # Pytest & verification configuration
