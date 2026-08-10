@@ -257,7 +257,7 @@ The 16-row STPA matrix below systematically synthesizes all 4 UCA categories ($\
 | **UCA-06** | Autopilot Mode Logic | Autopilot Pitch Down Trim Command | **2. Provided Unsafely** | Radio altimeter sensor fault / lock loss at low altitude $h < 400\text{ ft AGL}$, $S_{\text{phase}} = \text{APPROACH}$ | **H_1:** Controlled Flight Into Terrain (CFIT) | Catastrophic | **DAL A** |
 | **UCA-07** | Autopilot Mode Logic | VNAV Descent Mode Transition | **3. Provided Too Early** | Executed $15\text{ s}$ prior to ATC altitude clearance boundary, $h = 24,000\text{ ft MSL}$, $S_{\text{phase}} = \text{CRUISE}$ | **H_3:** Mid-Air Collision (MAC) | Hazardous | **DAL B** |
 | **UCA-08** | Autopilot Mode Logic | Nose-Up Pitch Hold Command | **4. Applied Too Long** | Pitch command maintained for $t > 5.0\text{ s}$ after Go-Around mode disengagement, $V_{\text{CAS}} < V_{\text{min}}$ | **H_2:** Loss of Control in Flight (LOC-I) | Catastrophic | **DAL A** |
-| **UCA-09** | Auto-Throttle System | Engine Thrust Increase Command | **1. Not Provided** | Airspeed decay $V_{\mathrm{CAS}} < V_{\mathrm{stall-warning}}$ ($V_{\text{CAS}} < 1.1 V_{\text{stall}}$), $h > 500\text{ ft AGL}$, $S_{\text{phase}} = \text{APPROACH}$ | **H_2:** Loss of Control in Flight (LOC-I) | Catastrophic | **DAL A** |
+| **UCA-09** | Auto-Throttle System | Engine Thrust Increase Command | **1. Not Provided** | Airspeed decay $V_{\text{CAS}} < V_{\text{stall-warning}}$ ($V_{\text{CAS}} < 1.1 V_{\text{stall}}$), $h > 500\text{ ft AGL}$, $S_{\text{phase}} = \text{APPROACH}$ | **H_2:** Loss of Control in Flight (LOC-I) | Catastrophic | **DAL A** |
 | **UCA-10** | Auto-Throttle / Reverser | Engine Thrust Reverser Deploy Command | **2. Provided Unsafely** | In-flight execution ($WoW = \text{False}$, $h > 50\text{ ft AGL}$, $V_{\text{CAS}} = 250\text{ kts}$, $S_{\text{phase}} \in \{\text{CLIMB}, \text{CRUISE}\}$) | **H_6:** Uncommanded Thrust Reversal | Catastrophic | **DAL A** |
 | **UCA-11** | Auto-Throttle System | Idle Thrust Retard Command | **3. Provided Too Early** | Issued $5.0\text{ s}$ prior to main landing gear touchdown, $h = 80\text{ ft AGL}$, $S_{\text{phase}} = \text{APPROACH}$ | **H_4:** Runway Excursion / Hard Landing | Major | **DAL C** |
 | **UCA-12** | Auto-Throttle / Reverser | Reverse Thrust Actuator Drive Power | **4. Applied Too Long** | Reverse thrust applied for $t > 3.0\text{ s}$ after ground taxi speed drops below $V_{\text{CAS}} < 10\text{ kts}$, $S_{\text{phase}} = \text{TAXI}$ | **H_4:** Runway / Taxiway Excursion | Major | **DAL C** |
@@ -316,85 +316,85 @@ $$
 - **SC-03 (Derivation from UCA-03):**
 
 $$
-\forall t, \quad t_{\text{latency}}(CA_{\text{aileron}}) \le 10\text{ ms} \quad (\text{ARINC 653 Execution Bound})
+\forall t, \quad t_{\text{latency}}\left(CA_{\text{aileron}}\right) \le 10\text{ ms} \quad (\text{ARINC 653 Execution Bound})
 $$
 
 - **SC-04 (Derivation from UCA-04):**
 
 $$
-\forall t, \quad (\text{Signal}_{\text{pilot-override}} = \text{True} \lor \text{Signal}_{\text{ap-disengage}} = \text{True}) \implies \text{Torque}_{\text{trim-drive}}(t + 5\text{ ms}) = 0.0\text{ Nm}
+\forall t, \quad \left(\text{Signal}_{\text{pilot-override}} = \text{True} \lor \text{Signal}_{\text{ap-disengage}} = \text{True}\right) \implies \text{Torque}_{\text{trim-drive}}(t + 5\text{ ms}) = 0.0\text{ Nm}
 $$
 
 - **SC-05 (Derivation from UCA-05):**
 
 $$
-\forall t, \quad (h(t) < 200 \land \text{Dev}_{\text{glideslope}} > 1.5\text{ dots} \land S_{\text{phase}} = \text{APPROACH}) \implies \text{Mode}_{\text{GA-engage}}(t) = \text{ASSERTED}
+\forall t, \quad \left(h(t) < 200 \land \text{Dev}_{\text{glideslope}} > 1.5\text{ dots} \land S_{\text{phase}} = \text{APPROACH}\right) \implies \text{Mode}_{\text{GA-engage}}(t) = \text{ASSERTED}
 $$
 
 - **SC-06 (Derivation from UCA-06):**
 
 $$
-\forall t, \quad (\text{Status}_{\text{rad-alt}} = \text{INVALID} \land h < 400\text{ ft}) \implies \text{Trim}_{\text{pitch-down}}(t) = \text{INHIBITED}
+\forall t, \quad \left(\text{Status}_{\text{rad-alt}} = \text{INVALID} \land h < 400\text{ ft}\right) \implies \text{Trim}_{\text{pitch-down}}(t) = \text{INHIBITED}
 $$
 
 - **SC-07 (Derivation from UCA-07):**
 
 $$
-\forall t, \quad (\text{Clearance}_{\text{ATC-altitude}} = \text{False}) \implies \text{Mode}_{\text{VNAV-descent}}(t) = \text{INHIBITED}
+\forall t, \quad \left(\text{Clearance}_{\text{ATC-altitude}} = \text{False}\right) \implies \text{Mode}_{\text{VNAV-descent}}(t) = \text{INHIBITED}
 $$
 
 - **SC-08 (Derivation from UCA-08):**
 
 $$
-\forall t, \quad (\text{Mode}_{\text{GA}} = \text{DISENGAGED}) \implies (t_{\text{hold}}(CA_{\text{nose-up}}) \le 0\text{ ms})
+\forall t, \quad \left(\text{Mode}_{\text{GA}} = \text{DISENGAGED}\right) \implies \left(t_{\text{hold}}(CA_{\text{nose-up}}) \le 0\text{ ms}\right)
 $$
 
 - **SC-09 (Derivation from UCA-09):**
 
 $$
-\forall t, \quad (V_{\text{CAS}}(t) < 1.1 V_{\text{stall}} \land h > 500\text{ ft}) \implies \text{Command}_{\text{thrust-increase}}(t) = \text{MAX-TOGA}
+\forall t, \quad \left(V_{\text{CAS}}(t) < 1.1 V_{\text{stall}} \land h > 500\text{ ft}\right) \implies \text{Command}_{\text{thrust-increase}}(t) = \text{MAX-TOGA}
 $$
 
 - **SC-10 (Derivation from UCA-10):**
 
 $$
-\forall t, \quad (WoW = \text{False} \lor h(t) > 50\text{ ft}) \implies \text{Power}_{\text{reverser-solenoid}}(t) = \text{ISOLATED} \quad (\text{Hardware Lockout})
+\forall t, \quad \left(WoW = \text{False} \lor h(t) > 50\text{ ft}\right) \implies \text{Power}_{\text{reverser-solenoid}}(t) = \text{ISOLATED} \quad (\text{Hardware Lockout})
 $$
 
 - **SC-11 (Derivation from UCA-11):**
 
 $$
-\forall t, \quad (h(t) > 30\text{ ft AGL}) \implies \text{Thrust}_{\text{retard-command}}(t) = \text{INHIBITED}
+\forall t, \quad \left(h(t) > 30\text{ ft AGL}\right) \implies \text{Thrust}_{\text{retard-command}}(t) = \text{INHIBITED}
 $$
 
 - **SC-12 (Derivation from UCA-12):**
 
 $$
-\forall t, \quad (V_{\text{CAS}}(t) < 10\text{ kts} \land WoW = \text{True}) \implies \text{Reverser}_{\text{actuator-drive}}(t + 500\text{ ms}) = \text{OFF}
+\forall t, \quad \left(V_{\text{CAS}}(t) < 10\text{ kts} \land WoW = \text{True}\right) \implies \text{Reverser}_{\text{actuator-drive}}(t + 500\text{ ms}) = \text{OFF}
 $$
 
 - **SC-13 (Derivation from UCA-13):**
 
 $$
-\forall t, \quad (|T_{\text{eng1}} - T_{\text{eng2}}| > 0.40 \land V_{\text{CAS}} > V_1) \implies \text{Rudder}_{\text{yaw-damper-comp}}(t) = \text{ACTIVE}
+\forall t, \quad \left(\left|T_{\text{eng1}} - T_{\text{eng2}}\right| > 0.40 \land V_{\text{CAS}} > V_1\right) \implies \text{Rudder}_{\text{yaw-damper-comp}}(t) = \text{ACTIVE}
 $$
 
 - **SC-14 (Derivation from UCA-14):**
 
 $$
-\forall t, \quad (V_{\text{CAS}}(t) > V_A) \implies \delta_{\text{rudder-command}}(t) \le \delta_{\text{max-safe}}(V_{\text{CAS}})
+\forall t, \quad \left(V_{\text{CAS}}(t) > V_A\right) \implies \delta_{\text{rudder-command}}(t) \le \delta_{\text{max-safe}}\left(V_{\text{CAS}}\right)
 $$
 
 - **SC-15 (Derivation from UCA-15):**
 
 $$
-\forall t, \quad (\text{Timer}_{\text{minor-frame-partition1}} \ge 20\text{ ms}) \implies \text{Switch}_{\text{partition-context}}(t) = \text{FORCED}
+\forall t, \quad \left(\text{Timer}_{\text{minor-frame-partition1}} \ge 20\text{ ms}\right) \implies \text{Switch}_{\text{partition-context}}(t) = \text{FORCED}
 $$
 
 - **SC-16 (Derivation from UCA-16):**
 
 $$
-\forall t, \quad (\text{State}_{\text{partition1}} = \text{EXECUTING-DAL-A}) \implies \text{Interrupt}_{\text{preemption-partition4}}(t) = \text{BLOCKED}
+\forall t, \quad \left(\text{State}_{\text{partition1}} = \text{EXECUTING-DAL-A}\right) \implies \text{Interrupt}_{\text{preemption-partition4}}(t) = \text{BLOCKED}
 $$
 
 ##### BDD Executable Proof Scenarios (DO-178C DAL A Verification Suite)
@@ -460,7 +460,7 @@ flowchart LR
 
 ## Section 4: FMECA Bottom-Up Risk Framework
 
-While System-Theoretic Process Analysis (STPA) provides top-down hazard identification focused on unsafe control interactions, Failure Mode, Effects, and Criticality Analysis (FMECA) provides the indispensable bottom-up engineering foundation. FMECA evaluates individual component failure rates, hardware interface degradations, bus register corruptions, and semiconductor soft errors to calculate quantitative criticality indices ($C_r$) and Risk Priority Numbers ($\mathrm{RPN}$). DEAP unifies top-down STPA with bottom-up FMECA into an integrated, closed-loop safety synthesis engine.
+While System-Theoretic Process Analysis (STPA) provides top-down hazard identification focused on unsafe control interactions, Failure Mode, Effects, and Criticality Analysis (FMECA) provides the indispensable bottom-up engineering foundation. FMECA evaluates individual component failure rates, hardware interface degradations, bus register corruptions, and semiconductor soft errors to calculate quantitative criticality indices ($C_r$) and Risk Priority Numbers ($\text{RPN}$). DEAP unifies top-down STPA with bottom-up FMECA into an integrated, closed-loop safety synthesis engine.
 
 ### 4.1 Mathematical & Failure-Rate Foundations of FMECA
 
@@ -498,9 +498,9 @@ where:
 - $t$: Operating mission duration ($t = 1.0$ flight hour baseline).
 
 #### 4.1.4 Risk Priority Number (RPN) Formulation
-To prioritize mechanical mitigation engineering within DEAP build pipelines, each failure mode is evaluated using the quantitative Risk Priority Number ($\mathrm{RPN}$):
+To prioritize mechanical mitigation engineering within DEAP build pipelines, each failure mode is evaluated using the quantitative Risk Priority Number ($\text{RPN}$):
 
-$$\mathrm{RPN} = S \times O \times D$$
+$$\text{RPN} = S \times O \times D$$
 
 where:
 - **Severity ($S$, 1–10):** Measures the maximum end-effect impact on aircraft safety, mapped directly to SAE ARP4761A severity categories.
