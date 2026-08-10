@@ -229,5 +229,5 @@ def test_repository_profile_compliance():
 
 - Verbatim Agent Rules: [AGENTS.md](../../../.agents/AGENTS.md)
 - Project Functional Constitution: [constitution.md](../../../.pipeline/constitution.md)
-- Constitution First Mandate: [constitution-first.md](../../../rules/constitution-first.md)
-- User Authorization Lock: [user-authorization-lock.md](../../../rules/user-authorization-lock.md)
+- Constitution First Mandate: [constitution-first.md](https://github.com/gintatkinson/DEAP-spec-core/blob/main/rules/constitution-first.md)
+- User Authorization Lock: [user-authorization-lock.md](https://github.com/gintatkinson/DEAP-spec-core/blob/main/rules/user-authorization-lock.md)
