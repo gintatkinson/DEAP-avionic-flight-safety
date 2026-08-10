@@ -16,6 +16,12 @@ By unifying System-Theoretic Process Analysis (STPA) with Failure Mode, Effects,
 
 ---
 
+## 1.1 Primary Commercial Toolchain Integration
+
+This platform explicitly declares **MATLAB / Simulink / Stateflow / Embedded Coder** as the Primary Tier-1 Commercial Toolchain Integration (Model-Based Design, Control Law Synthesis, DO-178C C/SPARK Ada Code Generation).
+
+---
+
 ## 2. Supported Regulatory & Airworthiness Frameworks
 
 | Standard | Domain & Scope | Target Assurance | DEAP Mechanical Automation |
