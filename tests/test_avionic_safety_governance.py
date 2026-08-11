@@ -44,3 +44,12 @@ def test_embedded_c_profile_misra_mandate():
     assert "MISRA-C:2012" in profile
     assert "ARINC 653" in profile
     assert "malloc" in profile
+
+def test_readme_pipeline_0_section():
+    readme = (REPO_ROOT / "README.md").read_text()
+    assert "## 6. Pipeline 0: Pre-Spec Safety Engineering Execution Workflow" in readme
+    assert "Worker 0A: CONOPS" in readme
+    assert "Worker 0B: STPA, FMECA & Airworthiness DAL Allocation" in readme
+    assert "Worker 0C: SysML v2 Safety Modeling & Model-Based Design Integration" in readme
+    assert "MATLAB / Simulink / Stateflow / Embedded Coder" in readme
+

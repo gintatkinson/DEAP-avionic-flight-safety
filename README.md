@@ -110,6 +110,37 @@ python3 compile_sysml.py docs/architecture/blueprints/DEAP_AVIONIC_SAFETY_MODEL.
 
 ---
 
-## 6. License & Governance
+## 6. Pipeline 0: Pre-Spec Safety Engineering Execution Workflow
+
+Pipeline 0 executes pre-specification safety engineering, transforming high-level operational concepts into formal safety models and allocation baselines prior to functional specification engineering. The workflow leverages context-isolated worker subagents operating under strict DO-178C / DO-254 / ARP4754A / ARP4761 airworthiness mandates.
+
+### 6.1 Subagent Execution Roles
+
+#### Worker 0A: CONOPS Engineering & Hazard Identification
+- **Role:** `Pipeline 0A CONOPS Worker`
+- **Scope:** 
+  - Formulates Concept of Operations (CONOPS), defining flight envelopes, operational phases (taxi, takeoff, climb, cruise, descent, approach, landing), and mission failure bounds.
+  - Performs initial system hazard identification per SAE ARP4754A / ARP4761 guidelines.
+  - Derives top-level safety objectives and airworthiness constraints linking operational scenarios to system-level safety targets.
+
+#### Worker 0B: STPA, FMECA & Airworthiness DAL Allocation
+- **Role:** `Pipeline 0B Safety Analysis Worker`
+- **Scope:**
+  - **STPA (System-Theoretic Process Analysis):** Constructs hierarchical control structure models, identifies Losses (L), Hazards (H), System Safety Constraints (SSC), and Unsafe Control Actions (UCAs) across flight control states.
+  - **FMECA (Failure Mode, Effects, and Criticality Analysis):** Tabulates item failure modes, local/end effects, failure detection mechanisms, single-point failure risks, and severity/criticality classifications.
+  - **DO-178C / DO-254 DAL Allocation:** Assigns Design Assurance Levels (DAL A through DAL E) to software and hardware items based on hazard severity (Catastrophic, Hazardous/Severe-Major, Major, Minor, No Safety Effect).
+  - **Verification Coverage Gates:** Mandates 100% MC/DC coverage for DAL A, Decision Coverage for DAL B, and Statement Coverage for DAL C software items, verified against SPARK Ada / Embedded C platform profiles.
+
+#### Worker 0C: SysML v2 Safety Modeling & Model-Based Design Integration
+- **Role:** `Pipeline 0C SysML v2 Safety Modeling Worker`
+- **Scope:**
+  - Authors formal SysML v2 textual safety models (`.sysml`), defining system block definitions, interface ports, safety constraint blocks, and requirement relationships (`satisfy`, `verify`, `refine`).
+  - Synthesizes safety model exports targeting the **Primary Tier-1 Commercial Toolchain Context** (**MATLAB / Simulink / Stateflow / Embedded Coder**).
+  - Establishes bi-directional traceability between SysML v2 safety requirements, Simulink control law models, Stateflow fault statecharts, and auto-generated C / SPARK Ada source code ASTs.
+
+---
+
+## 7. License & Governance
 
 Governed under the **Digital Engineering Agentic Pipeline (DEAP)** specification framework. All safety claims and traceability tags are mechanically validated on commit.
+
