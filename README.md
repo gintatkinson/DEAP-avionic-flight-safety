@@ -138,6 +138,81 @@ Pipeline 0 executes pre-specification safety engineering, transforming high-leve
   - Synthesizes safety model exports targeting the **Primary Tier-1 Commercial Toolchain Context** (**MATLAB / Simulink / Stateflow / Embedded Coder**).
   - Establishes bi-directional traceability between SysML v2 safety requirements, Simulink control law models, Stateflow fault statecharts, and auto-generated C / SPARK Ada source code ASTs.
 
+### 6.3 Pipeline 0 Command-Line Execution Prompts
+
+To execute Pipeline 0 via context-isolated subagents in your AI agent environment (Antigravity, Claude Code, Gemini CLI, Cursor), copy and execute the following standardized command-line execution prompts in sequence:
+
+#### 6.3.1 Worker 0A: CONOPS & Avionic Mission Envelope Prompt
+
+```text
+Role: Worker 0A — CONOPS & Avionic Mission Envelope Synthesizer
+
+Primary Commercial Toolchain Integration Context:
+This project explicitly declares MATLAB / Simulink / Stateflow / Embedded Coder as the Primary Tier-1 Commercial Toolchain Integration Context (Model-Based Design, Control Law Synthesis, DO-178C C/SPARK Ada code generation).
+
+Directive:
+Execute front-end CONOPS synthesis for the target civil airborne flight control system. Convert raw operational scenarios and airworthiness constraints into a structured Concept of Operations (`CONOPS.md`).
+
+1. Inputs & Constraints:
+   - Ingest civil aviation flight envelope boundaries (altitude, airspeed limits, flight phases: taxi, takeoff, climb, cruise, descent, approach, landing).
+   - Define system physical and functional boundaries for flight control computer (FCC), autopilot actuators, and flight deck displays.
+   - Perform initial system hazard identification per SAE ARP4754A / ARP4761 guidelines.
+
+2. Output Requirement:
+   - Generate `CONOPS.md` under `docs/conops/CONOPS.md`.
+   - Include operational phase boundaries, mission failure bounds, and top-level safety objectives.
+   - Establish baseline integration hooks for MATLAB / Simulink / Stateflow control law synthesis.
+
+PROCEED
+```
+
+#### 6.3.2 Worker 0B: STPA, FMECA & Airworthiness DAL Allocation Assurer Prompt
+
+```text
+Role: Worker 0B — STPA, FMECA & Airworthiness DAL Allocation Assurer
+
+Primary Commercial Toolchain Integration Context:
+This project explicitly declares MATLAB / Simulink / Stateflow / Embedded Coder as the Primary Tier-1 Commercial Toolchain Integration Context (Model-Based Design, Control Law Synthesis, DO-178C C/SPARK Ada code generation).
+
+Directive:
+Perform STPA hazard analysis, FMECA failure mode criticality evaluation, and RTCA DO-178C / DO-254 DAL allocation (DAL A–E) based on `docs/conops/CONOPS.md`.
+
+1. Standards Compliance:
+   - RTCA DO-178C (Software Considerations in Airborne Systems, DAL A 100% MC/DC coverage).
+   - RTCA DO-254 (Design Assurance for Airborne Electronic Hardware, DAL A Hardware).
+   - SAE ARP4754A / ARP4761 (Aircraft Systems Safety Assessment, STPA & FMECA).
+
+2. Output Requirements:
+   - Generate `STPA_MATRIX.md` under `docs/safety/STPA_MATRIX.md` containing System Losses ($L-1..N$), System Hazards ($H-1..N$), Control Structure topology, Unsafe Control Actions ($UCA-1..N$), Loss Scenarios ($LS-1..N$), and Safety Constraints ($SC-1..N$).
+   - Formulate FMECA Matrix detailing component failure modes, local/end effects, single-point failures, detection mechanisms, and Risk Priority Numbers (RPN).
+   - Allocate DO-178C / DO-254 Design Assurance Levels (DAL A–E) to all software and hardware components based on hazard severity (Catastrophic, Severe-Major, Major, Minor, No Safety Effect).
+
+PROCEED
+```
+
+#### 6.3.3 Worker 0C: SysML v2 Safety Modeling & Model-Based Design Integration Prompt
+
+```text
+Role: Worker 0C — SysML v2 Safety Modeling & Model-Based Design Integration Author
+
+Primary Commercial Toolchain Integration Context:
+This project explicitly declares MATLAB / Simulink / Stateflow / Embedded Coder as the Primary Tier-1 Commercial Toolchain Integration Context (Model-Based Design, Control Law Synthesis, DO-178C C/SPARK Ada code generation).
+
+Directive:
+Formalize the CONOPS (`CONOPS.md`), STPA hazard matrices, FMECA ratings, and DO-178C / DO-254 DAL allocations (`STPA_MATRIX.md`) into a normative SysML v2 textual model and serialized AST handoff contract.
+
+1. Model Engineering Mandate:
+   - Construct `DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.sysml` conforming to SysML v2 textual specification standards (`package`, `req`, `part`, `port`, `state`, `satisfy`, `verify`).
+   - Define safety statecharts for fault mitigation, autopilot engagement/disengagement, and run-time safety monitors.
+   - Synthesize MATLAB / Simulink / Stateflow export specifications for auto-generated SPARK Ada 2014 and MISRA-C:2012 / ARINC 653 code synthesis.
+
+2. Output Requirements:
+   - Generate `DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.sysml` under `docs/architecture/blueprints/DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.sysml`.
+   - Generate `pipeline0_handoff_contract.json` under `.pipeline/contracts/pipeline0_handoff_contract.json` containing serialized AST payloads for downstream Pipeline 1 Agile projection and Pipeline 2 code synthesis.
+
+PROCEED
+```
+
 ---
 
 ## 7. License & Governance

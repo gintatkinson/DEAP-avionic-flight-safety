@@ -52,4 +52,9 @@ def test_readme_pipeline_0_section():
     assert "Worker 0B: STPA, FMECA & Airworthiness DAL Allocation" in readme
     assert "Worker 0C: SysML v2 Safety Modeling & Model-Based Design Integration" in readme
     assert "MATLAB / Simulink / Stateflow / Embedded Coder" in readme
+    assert "### 6.3 Pipeline 0 Command-Line Execution Prompts" in readme
+    assert "Worker 0A: CONOPS & Avionic Mission Envelope Prompt" in readme
+    assert "Worker 0B: STPA, FMECA & Airworthiness DAL Allocation Assurer Prompt" in readme
+    assert "Worker 0C: SysML v2 Safety Modeling & Model-Based Design Integration Prompt" in readme
+
 
