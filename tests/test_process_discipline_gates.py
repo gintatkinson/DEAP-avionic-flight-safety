@@ -27,6 +27,7 @@ def test_the_plan_exists():
     """Guard: three assertions below scan it, and a missing file passes them all."""
     if not os.path.isfile(PLAN):
         return
+    assert os.path.isfile(PLAN), f"{PLAN} missing; the scans below would be vacuous"
     assert len(_plan()) > 5000, "implementation_plan.md is implausibly short"
 
 
@@ -114,10 +115,8 @@ _EXCLUDED_DIRS = {
 }
 _SCAN_ROOTS = [
     REPO_ROOT,
+    os.path.join(REPO_ROOT, "implementation_plan.md"),
 ]
-if os.path.isfile(os.path.join(REPO_ROOT, "implementation_plan.md")):
-    _SCAN_ROOTS.append(os.path.join(REPO_ROOT, "implementation_plan.md"))
-
 # This file names the forbidden construct in order to forbid it.
 _SELF = os.path.abspath(__file__)
 
@@ -172,6 +171,7 @@ def test_the_symlink_probe_hazard_is_documented():
     doc = os.path.join(REPO_ROOT, "rules", "document-references.md")
     if not os.path.isfile(doc):
         return
+    assert os.path.isfile(doc), "rules/document-references.md missing"
     with open(doc, "r", encoding="utf-8") as fh:
         text = fh.read()
     assert "find -type f" in text, "`rules/document-references.md` must explicitly warn against `find -type f`."
@@ -188,7 +188,7 @@ def test_every_realized_feature_has_governance_record():
     lib_dir = os.path.join(REPO_ROOT, "app_flutter", "lib")
     records_dir = os.path.join(REPO_ROOT, ".pipeline", "records")
     if not os.path.isdir(lib_dir):
-        return
+        return  # app_flutter decoupled or missing
     if not os.path.isdir(records_dir):
         return  # .pipeline/records/ has been purged from upstream governance
 
@@ -250,7 +250,6 @@ def test_blocked_specs_bounds_issue336():
         from reconcile_backlog import blocked_specs_from_linter_output
     except ImportError:
         return
-
     rules = {
         "backlog_directories": {
             "epics": "docs/epics",
@@ -315,12 +314,16 @@ def test_subagent_prompts_have_atomic_microtask_scope():
 
 def test_every_specification_has_full_lui_chain():
     """Scans all realized specification tags (/// Realises: [Feat-X], /// Realises: [US-Y], /// Realises: [UC-Z])
-    in app_flutter/lib/ and asserts that all 3 required layers exist across the implementation.
+    in app_flutter/lib/ and asserts that all 3 required layers exist across the implementation:
+    1. Domain Model: Data structure, entity, descriptor, domain interface, or data source.
+    2. ViewModel: State holder handling user actions (Cubit, ViewModel, Controller, StateNotifier).
+    3. LUI Widget Binding + BDD User Story Widget Test asserting User Event -> ViewModel Action -> State Change -> LUI Render.
+    Fails with exit code 1 if any layer is missing for a realized feature specification.
     """
     lib_dir = os.path.join(REPO_ROOT, "app_flutter", "lib")
     test_dir = os.path.join(REPO_ROOT, "app_flutter", "test")
     if not os.path.isdir(lib_dir) or not os.path.isdir(test_dir):
-        return
+        return  # app_flutter decoupled or missing
 
     tag_pattern = re.compile(r"///\s*Realises:\s*\[\s*([A-Za-z0-9_\-]+)(?:/|\s*\])", re.IGNORECASE)
     spec_map = {}
@@ -357,10 +360,14 @@ def test_every_specification_has_full_lui_chain():
                            any(k in content for k in ["StatelessWidget", "StatefulWidget", "Widget", "Painter"]):
                             spec_map[spec_raw]["has_lui_widget"] = True
 
-    if not spec_map:
-        return
+    assert spec_map, "No realized specification tags (Feat-X, US-Y, UC-Z) found in app_flutter/lib/"
+
+    # Assert BDD User Story Widget test files exist in app_flutter/test/
+    test_files = [f for root, _, files in os.walk(test_dir) for f in files if f.endswith(".dart")]
+    assert len(test_files) > 0, "No BDD User Story Widget tests found in app_flutter/test/"
 
     incomplete_specs = []
+    # Verify user-facing feature specifications (such as FEAT-10) possess all 3 layers
     feature_specs_to_check = [s for s in spec_map.keys() if s.startswith("FEAT-") and s != "FEAT-000"]
     for spec_id in feature_specs_to_check:
         info = spec_map[spec_id]
@@ -422,8 +429,7 @@ def test_upstream_pipeline_contains_only_governance_files():
     and no leftover domain_specs, records, or diagnostics directories.
     """
     pipeline_dir = os.path.join(REPO_ROOT, ".pipeline")
-    if not os.path.isdir(pipeline_dir):
-        return
+    assert os.path.isdir(pipeline_dir), f"{pipeline_dir} missing"
 
     allowed_entries = {
         "constitution.md",
@@ -525,3 +531,17 @@ def test_subagent_prompts_contain_untruncated_skill_directives():
     )
     _, status_summarized = verify_fn(fail_summarized)
     assert status_summarized is False, "Expected payload with [...] or summarized to fail"
+
+    # Test failing payload (contains forbidden gh issue close)
+    fail_issue_close = (
+        "Execute view_file on skills/feature-driven-implementation/SKILL.md as step 1. "
+        "Fix issue and run gh issue close 123."
+    )
+    _, status_issue_close = verify_fn(fail_issue_close)
+    assert status_issue_close is False, "Expected payload with gh issue close to fail"
+
+
+
+
+
+
