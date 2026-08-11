@@ -80,7 +80,27 @@ DEAP-avionic-flight-safety/
 
 ## 5. Installation & Developer Quick-Start Guide
 
-### 5.1 Automated Turnkey Installation Command
+### 5.1 Prerequisites & Python 3.12 Setup
+
+The platform requires **Python 3.12+**, the configured tracker CLI, and git. Python scripts require `PyYAML` and `pytest`.
+
+#### Installing Python 3.12
+- **macOS (Homebrew)**:
+  ```bash
+  brew install python@3.12
+  python3.12 -m venv .venv
+  source .venv/bin/activate
+  pip install -r requirements.txt
+  ```
+- **Ubuntu / Debian**:
+  ```bash
+  sudo apt-get update && sudo apt-get install -y python3.12 python3.12-venv
+  python3.12 -m venv .venv
+  source .venv/bin/activate
+  pip install -r requirements.txt
+  ```
+
+### 5.2 Turnkey 1-Line Installer (Recommended)
 
 Run the turnkey automated installer directly inside your cloned project repository root:
 
@@ -92,15 +112,88 @@ curl -sSL https://raw.githubusercontent.com/gintatkinson/digital-pipeline-repo/m
 
 > **Note**: `install_pipeline.sh` automatically provisions `.venv`, installs Python dependencies, injects pipeline governance engine tooling, configures process discipline git hooks, bootstraps tracker labels, executes safety test verification (`pytest`), and compiles MBSE SysML v2 safety models in a single automated turnkey step.
 
-### 5.2 Mandatory Post-Install Agent Initialization & Skill Loading Sequence
+### 5.3 Direct Copy / Manual Setup
 
-Immediately following turnkey installation, any AI agent (Antigravity, Claude Code, Gemini CLI, Cursor) initializing in this repository MUST execute the following 5-step sequence before accepting user directives or executing task implementations:
+Alternatively, copy the pipeline directories and templates into your project repository manually:
 
-1. **Read Governance Constitution**: Execute `view_file` on `.pipeline/constitution.md` to ingest the platform-independent functional governance layer and zero-mocking persistence mandates.
-2. **Load Project Skills**: Execute `view_file` on `.agents/skills/feature-driven-implementation/SKILL.md` (and any active skills under `.agents/skills/`) to initialize feature-driven implementation protocols and review gates.
-3. **Load Governance Rules**: Ingest `.agents/AGENTS.md` to enforce project-scoped agentic rules, context-isolated subagent dispatch loops, and role boundary locks.
-4. **Load Platform Profile**: Read the target platform execution profile (`.pipeline/profiles/spark_ada.md` for SPARK Ada 2014 or `.pipeline/profiles/embedded_c.md` for MISRA-C / ARINC 653) to establish platform-specific build, test, and lifecycle constraints.
-5. **Bootstrap Tracker Labels**: Verify that repository issue tracker labels are synchronized and operational by running `python3 scripts/reconcile_backlog.py` or verifying label bootstrapping status.
+```bash
+git clone https://github.com/gintatkinson/digital-pipeline-repo.git ./.tmp-pipeline
+rm -rf ./skills ./rules ./.pipeline ./.agents ./scripts
+cp -RP ./.tmp-pipeline/skills ./
+cp -RP ./.tmp-pipeline/rules ./
+cp -RP ./.tmp-pipeline/.pipeline ./
+rm -rf ./.pipeline/upstream
+cp -RP ./.tmp-pipeline/.agents ./
+cp -RP ./.tmp-pipeline/scripts ./
+if [ -f ./.gitignore ]; then
+  cat ./.tmp-pipeline/.gitignore >> ./.gitignore
+else
+  cp ./.tmp-pipeline/.gitignore ./
+fi
+rm -rf ./.tmp-pipeline
+python3 scripts/setup_git_hooks.py
+python3 skills/spec-orchestrator/scripts/bootstrap_tracker_labels.py
+```
+
+### 5.4 Setup for Google Antigravity / Gemini CLI
+
+After copying the pipeline, configure Gemini / Antigravity to load the skills and rules:
+
+1. **Point Gemini / Antigravity at the skills directory**:
+   ```
+   Read the files in ./skills/, ./.agents/skills/, and ./rules/ directories.
+   ```
+2. **Mandatory Post-Install Agent Initialization Sequence**:
+   Immediately following turnkey installation, any AI agent (Antigravity, Claude Code, Gemini CLI, Cursor) initializing in this repository MUST execute the following 5-step sequence before accepting user directives or executing task implementations:
+   1. **Read Governance Constitution**: Execute `view_file` on `.pipeline/constitution.md` to ingest the platform-independent functional governance layer and zero-mocking persistence mandates.
+   2. **Load Project Skills**: Execute `view_file` on `.agents/skills/feature-driven-implementation/SKILL.md` (and any active skills under `.agents/skills/`) to initialize feature-driven implementation protocols and review gates.
+   3. **Load Governance Rules**: Ingest `.agents/AGENTS.md` to enforce project-scoped agentic rules, context-isolated subagent dispatch loops, and role boundary locks.
+   4. **Load Platform Profile**: Read the target platform execution profile (`.pipeline/profiles/spark_ada.md` for SPARK Ada 2014 or `.pipeline/profiles/embedded_c.md` for MISRA-C / ARINC 653) to establish platform-specific build, test, and lifecycle constraints.
+   5. **Bootstrap Tracker Labels**: Verify that repository issue tracker labels are synchronized and operational by running `python3 scripts/reconcile_backlog.py` or verifying label bootstrapping status.
+
+### 5.5 AGENTS.md Setup
+
+Ensure `.agents/AGENTS.md` exists in your project root to instruct initializing AI agents:
+
+```markdown
+# Agent Instructions
+
+## Pipeline Skills & Rules
+This project uses the Digital Engineering Agent Platform (DEAP).
+- Skills: read all SKILL.md files in `.agents/skills/` and `skills/`
+- Rules: read all files in `.agents/AGENTS.md` and `rules/`
+- Constitution: read `.pipeline/constitution.md` before any task
+- Profiles: read `.pipeline/profiles/spark_ada.md` or `.pipeline/profiles/embedded_c.md` before implementing features
+```
+
+### 5.6 Setup for Claude Code
+
+```bash
+# Add to CLAUDE.md:
+echo "Read all SKILL.md files in skills/ and .agents/skills/ and all rule files in rules/ before starting any task." >> CLAUDE.md
+```
+
+### 5.7 Setup for Cursor / Windsurf / Cascade
+
+Create `.cursor/rules/pipeline.mdc` or `.windsurf/rules/pipeline.md` referencing `.agents/skills/`, `skills/`, `.agents/AGENTS.md`, and `.pipeline/`.
+
+### 5.8 Downstream Baseline Verification Gate
+
+The verification gate acts as a post-installation and post-implementation compliance check:
+
+```bash
+python3 -m pytest tests/
+python3 scripts/verify_downstream_baseline.py --no-domain
+```
+
+### 5.9 Supported Runtimes Table
+
+| Runtime | Subagent Dispatch | Two-Stage Review |
+|---|---|---|
+| **Claude Code** | `Task("prompt")` — native isolated subagent | Separate reviewer subagents |
+| **Gemini CLI / Antigravity** | Subagent tool call with curated context | Separate reviewer subagents |
+| **Cascade (Windsurf/Devin)** | Coordinator re-reads files per task to simulate isolation | Explicit self-audit documented in `task.md` |
+| **Cursor** | Context-isolated subagent prompt execution | Sequential self-audit checklist |
 
 ---
 
