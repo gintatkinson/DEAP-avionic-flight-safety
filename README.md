@@ -1,4 +1,4 @@
-# Digital Engineering Agentic Pipeline (DEAP) — Civil Avionic Flight Safety Platform
+# Digital Engineering Agent Platform (DEAP) — Civil Avionic Flight Safety Platform
 
 > **Repository Identifier:** `DEAP-avionic-flight-safety`  
 > **Status:** `PRODUCTION-GRADE / ACTIVE`  
@@ -10,7 +10,7 @@
 
 ## 1. System Overview
 
-The **DEAP Civil Avionic Flight Safety Platform** (`DEAP-avionic-flight-safety`) is a standalone downstream domain platform built on the Digital Engineering Agentic Pipeline (DEAP) architecture. It provides an end-to-end model-based systems engineering (MBSE) and automated safety assurance environment for civil airborne flight control computers (FCC), autopilot systems, and safety-critical avionics.
+The **DEAP Civil Avionic Flight Safety Platform** (`DEAP-avionic-flight-safety`) is a standalone downstream domain platform built on the Digital Engineering Agent Platform (DEAP) architecture. It provides an end-to-end model-based systems engineering (MBSE) and automated safety assurance environment for civil airborne flight control computers (FCC), autopilot systems, and safety-critical avionics.
 
 By unifying System-Theoretic Process Analysis (STPA) with Failure Mode, Effects, and Criticality Analysis (FMECA), this platform enforces strict airworthiness standards down to source code ASTs, hardware register maps, and unit test execution gates.
 
@@ -304,5 +304,5 @@ PROCEED
 
 ## 7. License & Governance
 
-Governed under the **Digital Engineering Agentic Pipeline (DEAP)** specification framework. All safety claims and traceability tags are mechanically validated on commit.
+Governed under the **Digital Engineering Agent Platform (DEAP)** specification framework. All safety claims and traceability tags are mechanically validated on commit.
 

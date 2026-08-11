@@ -1,6 +1,6 @@
 ---
 title: "Platform Implementation Profile — SPARK Ada Flight Software"
-project: "Digital Engineering Agentic Pipeline (DEAP)"
+project: "Digital Engineering Agent Platform (DEAP)"
 platform: spark_ada
 tier: technical_execution
 target_standards:

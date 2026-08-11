@@ -1,6 +1,6 @@
 ---
 title: "Platform Implementation Profile — Embedded MISRA-C / ARINC 653 Flight Software"
-project: "Digital Engineering Agentic Pipeline (DEAP)"
+project: "Digital Engineering Agent Platform (DEAP)"
 platform: embedded_c
 tier: technical_execution
 target_standards:
