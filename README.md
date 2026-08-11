@@ -80,33 +80,27 @@ DEAP-avionic-flight-safety/
 
 ## 5. Installation & Developer Quick-Start Guide
 
-### 5.1 Step 1: Repository Clone
+### 5.1 Automated Turnkey Installation Command
+
+Run the turnkey automated installer directly inside your cloned project repository root:
+
 ```bash
 git clone https://github.com/gintatkinson/DEAP-avionic-flight-safety.git
 cd DEAP-avionic-flight-safety
-```
-
-### 5.2 Step 2: Virtual Environment Setup
-```bash
-python3.12 -m venv .venv
-source .venv/bin/activate
-pip install -r pyproject.toml
-```
-
-### 5.3 Step 3: DEAP Pipeline Tooling & Governance Engine Installation
-```bash
 curl -sSL https://raw.githubusercontent.com/gintatkinson/digital-pipeline-repo/main/scripts/install_pipeline.sh | bash
 ```
 
-### 5.4 Step 4: Automated Safety Governance Verification
-```bash
-python3 -m pytest tests/
-```
+> **Note**: `install_pipeline.sh` automatically provisions `.venv`, installs Python dependencies, injects pipeline governance engine tooling, configures process discipline git hooks, bootstraps tracker labels, executes safety test verification (`pytest`), and compiles MBSE SysML v2 safety models in a single automated turnkey step.
 
-### 5.5 Step 5: MBSE SysML v2 Model Compilation & Parsing
-```bash
-python3 compile_sysml.py docs/architecture/blueprints/DEAP_AVIONIC_SAFETY_MODEL.sysml
-```
+### 5.2 Mandatory Post-Install Agent Initialization & Skill Loading Sequence
+
+Immediately following turnkey installation, any AI agent (Antigravity, Claude Code, Gemini CLI, Cursor) initializing in this repository MUST execute the following 5-step sequence before accepting user directives or executing task implementations:
+
+1. **Read Governance Constitution**: Execute `view_file` on `.pipeline/constitution.md` to ingest the platform-independent functional governance layer and zero-mocking persistence mandates.
+2. **Load Project Skills**: Execute `view_file` on `.agents/skills/feature-driven-implementation/SKILL.md` (and any active skills under `.agents/skills/`) to initialize feature-driven implementation protocols and review gates.
+3. **Load Governance Rules**: Ingest `.agents/AGENTS.md` to enforce project-scoped agentic rules, context-isolated subagent dispatch loops, and role boundary locks.
+4. **Load Platform Profile**: Read the target platform execution profile (`.pipeline/profiles/spark_ada.md` for SPARK Ada 2014 or `.pipeline/profiles/embedded_c.md` for MISRA-C / ARINC 653) to establish platform-specific build, test, and lifecycle constraints.
+5. **Bootstrap Tracker Labels**: Verify that repository issue tracker labels are synchronized and operational by running `python3 scripts/reconcile_backlog.py` or verifying label bootstrapping status.
 
 ---
 
