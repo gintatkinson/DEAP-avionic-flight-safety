@@ -78,12 +78,34 @@ DEAP-avionic-flight-safety/
 
 ---
 
-## 5. Verification & Testing
+## 5. Installation & Developer Quick-Start Guide
 
-To run the automated governance and safety model verification suite:
+### 5.1 Step 1: Repository Clone
+```bash
+git clone https://github.com/gintatkinson/DEAP-avionic-flight-safety.git
+cd DEAP-avionic-flight-safety
+```
 
+### 5.2 Step 2: Virtual Environment Setup
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -r pyproject.toml
+```
+
+### 5.3 Step 3: DEAP Pipeline Tooling & Governance Engine Installation
+```bash
+curl -sSL https://raw.githubusercontent.com/gintatkinson/digital-pipeline-repo/main/scripts/install_pipeline.sh | bash
+```
+
+### 5.4 Step 4: Automated Safety Governance Verification
 ```bash
 python3 -m pytest tests/
+```
+
+### 5.5 Step 5: MBSE SysML v2 Model Compilation & Parsing
+```bash
+python3 compile_sysml.py docs/architecture/blueprints/DEAP_AVIONIC_SAFETY_MODEL.sysml
 ```
 
 ---
