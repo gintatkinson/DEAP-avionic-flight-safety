@@ -73,12 +73,7 @@ rm -rf "$TMP_DIR"
 echo "==> Cloning latest pipeline from $REPO_URL..."
 git clone --depth 1 "$REPO_URL" "$TMP_DIR"
 
-echo "==> Copying pipeline directories and configurations..."
 FORK_DIRS=("skills/" "rules/" ".pipeline/" ".agents/" "scripts/")
-
-if [ "$WITH_UI" = true ] || [ "$PROFILE" = "flutter" ] || [ "$PROFILE" = "react" ] || [ "$PROFILE" = "flutter_mobile" ] || [ "$PROFILE" = "react_web" ]; then
-  FORK_DIRS+=("app_flutter/" "web_react/")
-fi
 
 for dir in "${FORK_DIRS[@]}"; do
   clean_dir="${dir%/}"

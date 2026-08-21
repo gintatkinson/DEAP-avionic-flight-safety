@@ -16,6 +16,22 @@ import sys
 
 TIMEOUT_SECONDS = 600
 GIT_TIMEOUT_SECONDS = 30
+EXCLUDED_DIRS = {".git", "node_modules", ".dart_tool", "build"}
+
+def _terminate_process_group(proc):
+    """Terminate process group cleanly with SIGTERM followed by SIGKILL fallback."""
+    try:
+        os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
+        proc.wait(timeout=15)
+    except (subprocess.TimeoutExpired, ProcessLookupError, PermissionError):
+        try:
+            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+        except (ProcessLookupError, PermissionError):
+            pass
+        try:
+            proc.wait(timeout=5)
+        except (subprocess.TimeoutExpired, ProcessLookupError, PermissionError):
+            pass
 
 def _run_bounded(cmd, cwd, timeout, label):
     """Run cmd with a timeout that binds the whole process tree.
@@ -29,17 +45,8 @@ def _run_bounded(cmd, cwd, timeout, label):
     proc = subprocess.Popen(cmd, cwd=cwd, start_new_session=True)
     try:
         rc = proc.wait(timeout=timeout)
-    except subprocess.TimeoutExpired:
-        try:
-            os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
-            proc.wait(timeout=15)
-        except (subprocess.TimeoutExpired, ProcessLookupError, PermissionError):
-            try:
-                os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
-            except (ProcessLookupError, PermissionError):
-                pass
-            proc.wait()
-        raise subprocess.TimeoutExpired(cmd, timeout)
+    finally:
+        _terminate_process_group(proc)
     if rc != 0:
         raise subprocess.CalledProcessError(rc, cmd)
 
@@ -100,7 +107,8 @@ def cleanup_workspace(destination):
         if os.path.isdir(d_path):
             shutil.rmtree(d_path, ignore_errors=True)
 
-    for root, _, files in os.walk(destination):
+    for root, dirs, files in os.walk(destination):
+        dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
         for f in files:
             if f.endswith(".db-shm") or f.endswith(".db-wal") or f.endswith(".db-journal"):
                 sidecar_path = os.path.join(root, f)
@@ -192,8 +200,12 @@ def main():
             if web_react_dir not in targets:
                 targets.append(web_react_dir)
 
+        if not targets and os.path.isdir(repo_root):
+            print(f"NOTE: Destination path '{repo_root}' has no pubspec.yaml or package.json. Registering repository root for non-framework baseline checks.")
+            targets.append(repo_root)
+
     if not targets:
-        print(f"ERROR: Destination path '{repo_root}' does not appear to be a Flutter or React project (missing pubspec.yaml and package.json).", file=sys.stderr)
+        print(f"ERROR: Destination path '{repo_root}' does not appear to be a valid directory.", file=sys.stderr)
         sys.exit(1)
 
     reports = []
@@ -300,7 +312,8 @@ def check_gitignore_exists(repo_root):
 def check_no_ds_store_files(repo_root):
     """Check 11: Verify zero .DS_Store files exist in the working tree or git index."""
     ds_store_files = []
-    for root, _, files in os.walk(repo_root):
+    for root, dirs, files in os.walk(repo_root):
+        dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
         for f in files:
             if f == ".DS_Store":
                 ds_store_files.append(os.path.join(root, f))
@@ -317,7 +330,8 @@ def check_no_duplicate_master_blueprints(dest):
         "DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.sysml"
     }
     duplicates = []
-    for root, _, files in os.walk(dest):
+    for root, dirs, files in os.walk(dest):
+        dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
         for f in files:
             if f in master_blueprints:
                 duplicates.append(os.path.join(root, f))
