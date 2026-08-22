@@ -914,12 +914,15 @@ def blocked_specs_from_linter_output(output_text, workspace_dir, rules=None):
 
 
 def get_current_branch(workspace_dir):
-    res = subprocess.run(["git", "branch", "--show-current"], cwd=workspace_dir, capture_output=True, text=True, timeout=30)
-    if res.returncode == 0 and res.stdout.strip():
-        return res.stdout.strip()
-    res = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=workspace_dir, capture_output=True, text=True, timeout=30)
-    if res.returncode == 0 and res.stdout.strip():
-        return res.stdout.strip()
+    try:
+        res = subprocess.run(["git", "branch", "--show-current"], cwd=workspace_dir, capture_output=True, text=True, timeout=30)
+        if res.returncode == 0 and res.stdout.strip():
+            return res.stdout.strip()
+        res = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=workspace_dir, capture_output=True, text=True, timeout=30)
+        if res.returncode == 0 and res.stdout.strip():
+            return res.stdout.strip()
+    except Exception:
+        pass
     return "master"
 
 def extract_metadata(filepath):

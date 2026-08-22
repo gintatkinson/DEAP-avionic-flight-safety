@@ -45,8 +45,12 @@ def _run_bounded(cmd, cwd, timeout, label):
     proc = subprocess.Popen(cmd, cwd=cwd, start_new_session=True)
     try:
         rc = proc.wait(timeout=timeout)
-    finally:
+    except subprocess.TimeoutExpired:
         _terminate_process_group(proc)
+        raise subprocess.TimeoutExpired(cmd, timeout)
+    except (KeyboardInterrupt, BaseException):
+        _terminate_process_group(proc)
+        raise
     if rc != 0:
         raise subprocess.CalledProcessError(rc, cmd)
 
