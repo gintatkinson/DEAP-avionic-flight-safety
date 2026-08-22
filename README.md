@@ -249,6 +249,7 @@ Execute front-end CONOPS synthesis for the target civil airborne flight control 
    - Generate `CONOPS.md` under `docs/conops/CONOPS.md`.
    - Include operational phase boundaries, mission failure bounds, and top-level safety objectives.
    - Establish baseline integration hooks for MATLAB / Simulink / Stateflow control law synthesis.
+   - KaTeX / LaTeX Math Formatting Mandate: All multi-line aligned equations MUST be enclosed in `\begin{aligned} ... \end{aligned}` within `$$` delimiters on dedicated lines. Bare alignment tabs `&` outside an alignment environment (`aligned`, `matrix`, `cases`) and `\begin{align*}` environments are strictly forbidden.
 
 PROCEED
 ```
@@ -273,6 +274,7 @@ Perform STPA hazard analysis, FMECA failure mode criticality evaluation, and RTC
    - Generate `STPA_MATRIX.md` under `docs/safety/STPA_MATRIX.md` containing System Losses ($L-1..N$), System Hazards ($H-1..N$), Control Structure topology, Unsafe Control Actions ($UCA-1..N$), Loss Scenarios ($LS-1..N$), and Safety Constraints ($SC-1..N$).
    - Formulate FMECA Matrix detailing component failure modes, local/end effects, single-point failures, detection mechanisms, and Risk Priority Numbers (RPN).
    - Allocate DO-178C / DO-254 Design Assurance Levels (DAL A–E) to all software and hardware components based on hazard severity (Catastrophic, Severe-Major, Major, Minor, No Safety Effect).
+   - KaTeX / LaTeX Math Formatting Mandate: All multi-line aligned equations MUST be enclosed in `\begin{aligned} ... \end{aligned}` within `$$` delimiters on dedicated lines. Bare alignment tabs `&` outside an alignment environment (`aligned`, `matrix`, `cases`) and `\begin{align*}` environments are strictly forbidden.
 
 PROCEED
 ```
@@ -292,6 +294,7 @@ Formalize the CONOPS (`CONOPS.md`), STPA hazard matrices, FMECA ratings, and DO-
    - Construct `DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.sysml` conforming to SysML v2 textual specification standards (`package`, `req`, `part`, `port`, `state`, `satisfy`, `verify`).
    - Define safety statecharts for fault mitigation, autopilot engagement/disengagement, and run-time safety monitors.
    - Synthesize MATLAB / Simulink / Stateflow export specifications for auto-generated SPARK Ada 2014 and MISRA-C:2012 / ARINC 653 code synthesis.
+   - KaTeX / LaTeX Math Formatting Mandate: Ensure any statechart/mathematical transition guards and formal expressions follow standard escaping and valid KaTeX blocks (all multi-line aligned equations MUST be enclosed in `\begin{aligned} ... \end{aligned}` within `$$` delimiters on dedicated lines; bare alignment tabs `&` outside an alignment environment and `\begin{align*}` are strictly forbidden).
 
 2. Output Requirements:
    - Generate `DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.sysml` under `docs/architecture/blueprints/DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.sysml`.

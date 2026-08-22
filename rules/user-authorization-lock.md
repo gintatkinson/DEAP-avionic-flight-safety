@@ -17,6 +17,7 @@
   * Am I making any silent assumptions about the user's intent?
   * Does the active skill mandate context-isolated subagent dispatches, **or** does this turn write any repository source or specification file? (If yes to either, coordinator direct file-writing is locked).
 - **Scope of point 4 (issue #312).** The delegation duty binds for all repository source and specification writes, not only during named skill phases. Governance, tooling, rule, test and documentation repair are repository writes and are therefore in scope even when no skill is active and no skill names them. Reading point 4 narrowly — "this is not skill execution, so the mandate does not apply" — is the failure recorded in #312, where the coordinator wrote every file directly for an entire session. Per § *Precedence* below, where a narrow and a broad reading are both available, the strictest applies. This is a statement of scope, not a new obligation: it makes explicit which writes `rules/role-boundary-lock.md` § *Coordinator Direct Writing & Research Lock* already covered.
+- **Mandatory Empirical Physical Path Verification**: The agent is strictly mandated to execute empirical physical path verification (`ls`, `git status`, `git rev-parse --show-toplevel`) on target workstation directories before declaring completion or transitioning status to `status:fixed-resolved`. Optimism bias or assuming target workstation directory states without empirical verification commands is strictly prohibited.
 
 ## Precedence
 
@@ -44,3 +45,7 @@ To prevent the agent from making silent assumptions, performing unapproved actio
 Issue #295 records the failure this prevents: an agent read `rules/` and the constitution,
 both of which stated that a keyword sufficed, never read `.agents/AGENTS.md`, and pushed
 two unapproved commits to `main`.
+
+## Mandatory Empirical Physical Path Verification Gate
+
+The agent is strictly mandated to execute empirical physical path verification (`git status`, `git rev-parse --show-toplevel`) on target workstation directories before declaring completion or transitioning status to `status:fixed-resolved`. Optimism bias or assuming target workstation directory states without empirical verification commands is strictly prohibited.
