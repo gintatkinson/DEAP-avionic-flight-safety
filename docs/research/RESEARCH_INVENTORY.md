@@ -83,6 +83,6 @@ All external additions, proprietary extensions, and domain-specific baselines MU
 | Declared Total Normative Obligations | 20 | >= 1 | Conforming |
 | Declared Total Safety Constraints | 20 | >= 1 | Conforming |
 | Declared Total METL Tasks | 4 | >= 1 | Conforming |
-| Declared Total Control Patterns | 4 | >= 1 | Conforming |
+| Declared Total Control Patterns | 6 | >= 1 | Conforming |
 | Clause Citation Traceability Percentage | 100% | 100% | Conforming |
 | Un-Cited / Speculative Additions | 0 | 0 (Strict Zero Tolerance) | Conforming |
