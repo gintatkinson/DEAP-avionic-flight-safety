@@ -247,6 +247,18 @@ def test_zero_machine_paths_in_repository():
         if rel_path == "tests/test_baseline.py":
             continue
         file_path = os.path.join(repo_root, rel_path)
+        if os.path.islink(file_path):
+            try:
+                link_target = os.readlink(file_path)
+                match = pattern.search(link_target)
+                if match:
+                    violations.append(f"{rel_path} (symlink target: {link_target})")
+            except Exception as e:
+                violations.append(f"Failed to read symlink {rel_path}: {e}")
+            if os.path.isdir(file_path) or not os.path.exists(file_path):
+                continue
+        if os.path.isdir(file_path):
+            continue
         try:
             with open(file_path, "r", encoding="utf-8", errors="ignore") as file_obj:
                 for line_idx, line in enumerate(file_obj, start=1):
