@@ -1,9 +1,9 @@
 # Project-Scoped Rules
 
 ## Repository Role & Scope Classification
-- **Repository Classification:** `UPSTREAM_SPEC_CORE_COMPILER` (Digital Engineering Agent Platform Core Specification Compiler)
-- **Sentinel Indicator:** The presence of `.pipeline/upstream/` and `skills/spec-orchestrator/` denotes that this repository is the **Upstream Specification Core Compiler**, NOT a downstream customer application workspace or domain template.
-- **Domain Template & Customer Data Boundary:** Domain-specific platforms (e.g. UAS safety, automotive, medical) and customer applications belong in downstream distribution repositories, and must NOT be committed to this upstream specification core compiler repository.
+- **Repository Classification:** `DOMAIN_TEMPLATE_PARENT` (Parent Avionic Flight Safety Specification Template)
+- **Sentinel Indicator:** The absence of `.pipeline/upstream/` combined with the presence of `skills/spec-orchestrator/` denotes that this repository is a **Parent Domain Specification Template** (`DOMAIN_TEMPLATE_PARENT`) for Common Aviation Safety Standards (parent of `DEAP-uas-infrastructure-safety`), NOT the upstream specification core compiler and NOT a downstream customer application workspace.
+- **Domain Template & Customer Data Boundary:** Domain-specific platforms (e.g. UAS safety, automotive, medical) and customer applications belong in downstream distribution repositories, and must NOT be committed to this template repository.
 
 ## Pure Schema-Driven Compiler Invariant (Zero Hardcoded Domain Concepts)
 - **Abstract MBSE Compiler Declaration**: The DEAP pipeline is an abstract Model-Based Systems Engineering (MBSE) compiler and verification framework, NOT a domain-specific modeler.
@@ -107,8 +107,8 @@ is found, HALT and escalate as a blocker. Do not substitute direct coordinator w
 - You are strictly forbidden from commingling unrelated or multi-phase tasks in a single cumulative walkthrough. Unrelated changes or follow-up tasks must be treated as separate atomic packages with their own implementation plans, git branches/commits, and walkthroughs.
 
 ## Mandatory Upstream Tooling Bug Reporting
-- If a bug, edge case, or limitation is identified in the shared pipeline scripts (e.g., `verify_model_coverage.py`, `reconcile_backlog.py`), the executing agent is strictly required to file a corresponding defect report upstream on the appropriate repository (`gintatkinson/DEAP-spec-core` for specification tooling or `gintatkinson/DEAP-implementation-driver` for implementation tooling).
-- Tooling Error Recovery Procedure: Locate the diagnostic payload at `.pipeline/diagnostics/repro_payload_[timestamp].json` and execute: `gh issue create --repo gintatkinson/DEAP-spec-core --title "Tooling Bug: [Command] failed" --body-file [payload_path] --label "bug"` (or `--repo gintatkinson/DEAP-implementation-driver` for implementation tooling bugs).
+- If a bug, edge case, or limitation is identified in the shared pipeline scripts (e.g., `verify_model_coverage.py`, `reconcile_backlog.py`), the executing agent is strictly required to file a corresponding defect report upstream on the appropriate repository (`gintatkinson/DEAP01-spec-core` for specification tooling or `gintatkinson/DEAP-implementation-driver` for implementation tooling).
+- Tooling Error Recovery Procedure: Locate the diagnostic payload at `.pipeline/diagnostics/repro_payload_[timestamp].json` and execute: `gh issue create --repo gintatkinson/DEAP01-spec-core --title "Tooling Bug: [Command] failed" --body-file [payload_path] --label "bug"` (or `--repo gintatkinson/DEAP-implementation-driver` for implementation tooling bugs).
 - Agents must not silently apply local-only patches to pipeline scripts without filing an upstream synchronization issue.
 
 ## Documentation Integrity — No Wholesale Replacement Without Approval
@@ -175,7 +175,7 @@ is found, HALT and escalate as a blocker. Do not substitute direct coordinator w
 - **Anti-Negligence & Mandatory Payload Inspection Gate**: Agents are strictly forbidden from declaring completion or readiness for testing without citing live empirical inspection of target artifacts (including `README.md` commands).
 
 ## Downstream Single Source of Truth (SSOT) & Clean Baseline Mandate
-- **No Master Blueprint Duplication**: Downstream projects MUST NOT duplicate or copy master core blueprint files (`DEAP_MASTER_ARCHITECTURE.md`, `THREE_TIER_GOVERNANCE_BLUEPRINT.md`, `DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.sysml`). Central specification blueprints belong exclusively in the upstream specification repository (`gintatkinson/DEAP-spec-core`).
+- **No Master Blueprint Duplication**: Downstream projects MUST NOT duplicate or copy master core blueprint files (`DEAP_MASTER_ARCHITECTURE.md`, `THREE_TIER_GOVERNANCE_BLUEPRINT.md`, `DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.sysml`). Central specification blueprints belong exclusively in the upstream specification repository (`gintatkinson/DEAP01-spec-core`).
 - **Mandatory Repository `.gitignore`**: All downstream projects and workspace repositories MUST include a root `.gitignore` file.
 - **Zero `.DS_Store` Policy**: OS artifact metadata files (`.DS_Store`) are strictly forbidden in git index and working tree across all repositories. Automated cleanup and linter gates enforce zero `.DS_Store` presence.
 

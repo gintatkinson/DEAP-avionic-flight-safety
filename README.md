@@ -1,8 +1,8 @@
-# Digital Engineering Agent Platform (DEAP) — Core Specification Compiler
+# Digital Engineering Agent Platform (DEAP) — Avionic Flight Safety Parent Template
 
-> **Repository Identifier:** `DEAP-spec-core`  
-> **Repository Role:** `UPSTREAM_SPEC_CORE_COMPILER` (Digital Engineering Agent Platform Core Specification Compiler)  
-> **Classification:** `Abstract Model-Based Systems Engineering (MBSE) Compiler & Multi-Agent Verification Platform`  
+> **Repository Identifier:** `DEAP-avionic-flight-safety`  
+> **Repository Role:** `DOMAIN_TEMPLATE_PARENT` (Parent Avionic Flight Safety Specification Template)  
+> **Classification:** `Domain-Specific Functional Safety Specification Template & Parent Distribution Template`  
 > **Status:** `PRODUCTION-GRADE / ACTIVE`  
 > **Primary Commercial Toolchain Integration:** `MATLAB / Simulink / Stateflow / Embedded Coder`  
 > **Supported Schema Standards:** `SysML v2 (OMG)` | `OMG IDL` | `AUTOSAR ARXML` | `YANG (Network Topology)` | `OpenAPI v3` | `Protobuf v3`  
@@ -12,9 +12,9 @@
 
 ## 1. System Overview
 
-The **Digital Engineering Agent Platform Core Specification Compiler (`DEAP-spec-core`)** is the upstream abstract systems engineering compiler and multi-agent verification framework for DEAP. It provides deterministic translation, model-based validation, bidirectional synchronization, and quality gate enforcement bridging formal engineering models (SysML v2, YANG, IDL, ARXML, OpenAPI, Protobuf) with downstream Agile specification backlogs and autonomous code generation.
+The **Digital Engineering Agent Platform Avionic Flight Safety Parent Template (`DEAP-avionic-flight-safety`)** is the Tier 1 parent domain distribution template for civil and military avionic flight safety, high-integrity control architectures, and standards-compliance engineering within DEAP. It provides normative regulatory matrices (RTCA DO-178C, RTCA DO-254, SAE ARP4754A, SAE ARP4761, MIL-STD-882E), flight safety control pattern catalogs, and automated specification verification tooling.
 
-Operating purely on Abstract Syntax Tree (AST) tokens without hardcoding domain concepts, `DEAP-spec-core` serves as the upstream parent compiler from which domain-specific distribution templates (e.g. `DEAP-uas-infrastructure-safety`, automotive, medical, and telecommunications) and downstream customer projects are derived via `scripts/install_pipeline.sh`.
+Operating on verified systems engineering artifacts and SysML v2 models, `DEAP-avionic-flight-safety` serves as the parent domain template from which child distribution templates (e.g., `DEAP-uas-infrastructure-safety`) and downstream customer project workspaces are derived via `scripts/install_pipeline.sh`.
 
 ---
 
@@ -50,37 +50,51 @@ DEAP supports decoupled downstream implementation profiles residing under `.pipe
 
 ## 4. Repository Structure & Canonical Specifications
 
-All architecture blueprints, concept papers, SysML v2 models, and specifications for DEAP are hosted centrally in the Single Source of Truth repository: **[DEAP-spec-core](https://github.com/gintatkinson/DEAP-spec-core)** and in repository blueprints.
+All architecture blueprints, concept papers, SysML v2 models, and specifications for DEAP are hosted centrally in the Single Source of Truth repository: **[DEAP01-spec-core](https://github.com/gintatkinson/DEAP01-spec-core)** and in repository blueprints.
 
 ### Canonical Specifications & Architecture Blueprints:
-- **Multi-Provider GitLab Infrastructure Blueprint**: [MULTI_PROVIDER_GITLAB_INFRASTRUCTURE_ARCHITECTURE.md](https://github.com/gintatkinson/DEAP-spec-core/blob/main/docs/architecture/blueprints/MULTI_PROVIDER_GITLAB_INFRASTRUCTURE_ARCHITECTURE.md) (`DEAP-BLUEPRINT-GITLAB-001`)
-- **Bidirectional SysML v2 Synchronization Blueprint**: [SYSML_SSOT_BIDIRECTIONAL_SYNCHRONIZATION_ARCHITECTURE.md](https://github.com/gintatkinson/DEAP-spec-core/blob/main/docs/architecture/blueprints/SYSML_SSOT_BIDIRECTIONAL_SYNCHRONIZATION_ARCHITECTURE.md) (`DEAP-BLUEPRINT-SYSML-SSOT-001`)
-- **UAS Infrastructure Safety Concept Paper**: [DEAP_UAS_INFRASTRUCTURE_SAFETY_CONCEPT_PAPER.md](https://github.com/gintatkinson/DEAP-spec-core/blob/main/docs/architecture/blueprints/DEAP_UAS_INFRASTRUCTURE_SAFETY_CONCEPT_PAPER.md)
-- **SysML v2 Textual Safety Model**: [DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.sysml](https://github.com/gintatkinson/DEAP-spec-core/blob/main/docs/architecture/blueprints/DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.sysml)
-- **SysML v2 MATLAB Export Blueprint**: [DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.md](https://github.com/gintatkinson/DEAP-spec-core/blob/main/docs/architecture/blueprints/DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.md)
-- **Safety-Critical Real-Time UI Framework**: [SAFETY_CRITICAL_REALTIME_UI_FRAMEWORK.md](https://github.com/gintatkinson/DEAP-spec-core/blob/main/docs/architecture/blueprints/SAFETY_CRITICAL_REALTIME_UI_FRAMEWORK.md)
-- **Master Specification Sitemap**: [DEAP_SPECIFICATIONS_SITEMAP.md](https://github.com/gintatkinson/DEAP-spec-core/blob/main/docs/architecture/DEAP_SPECIFICATIONS_SITEMAP.md)
-- **Standardized Operator Usage Prompt Catalog**: [OPERATOR_PROMPT_CATALOG.md](https://github.com/gintatkinson/DEAP-spec-core/blob/main/docs/OPERATOR_PROMPT_CATALOG.md)
+- **Multi-Provider GitLab Infrastructure Blueprint**: [MULTI_PROVIDER_GITLAB_INFRASTRUCTURE_ARCHITECTURE.md](https://github.com/gintatkinson/DEAP01-spec-core/blob/main/docs/architecture/blueprints/MULTI_PROVIDER_GITLAB_INFRASTRUCTURE_ARCHITECTURE.md) (`DEAP-BLUEPRINT-GITLAB-001`)
+- **Bidirectional SysML v2 Synchronization Blueprint**: [SYSML_SSOT_BIDIRECTIONAL_SYNCHRONIZATION_ARCHITECTURE.md](https://github.com/gintatkinson/DEAP01-spec-core/blob/main/docs/architecture/blueprints/SYSML_SSOT_BIDIRECTIONAL_SYNCHRONIZATION_ARCHITECTURE.md) (`DEAP-BLUEPRINT-SYSML-SSOT-001`)
+- **UAS Infrastructure Safety Concept Paper**: [DEAP_UAS_INFRASTRUCTURE_SAFETY_CONCEPT_PAPER.md](https://github.com/gintatkinson/DEAP01-spec-core/blob/main/docs/architecture/blueprints/DEAP_UAS_INFRASTRUCTURE_SAFETY_CONCEPT_PAPER.md)
+- **SysML v2 Textual Safety Model**: [DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.sysml](https://github.com/gintatkinson/DEAP01-spec-core/blob/main/docs/architecture/blueprints/DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.sysml)
+- **SysML v2 MATLAB Export Blueprint**: [DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.md](https://github.com/gintatkinson/DEAP01-spec-core/blob/main/docs/architecture/blueprints/DEAP_SYSML_V2_SAFETY_MODEL_SPECIFICATION.md)
+- **Safety-Critical Real-Time UI Framework**: [SAFETY_CRITICAL_REALTIME_UI_FRAMEWORK.md](https://github.com/gintatkinson/DEAP01-spec-core/blob/main/docs/architecture/blueprints/SAFETY_CRITICAL_REALTIME_UI_FRAMEWORK.md)
+- **Master Specification Sitemap**: [DEAP_SPECIFICATIONS_SITEMAP.md](https://github.com/gintatkinson/DEAP01-spec-core/blob/main/docs/architecture/DEAP_SPECIFICATIONS_SITEMAP.md)
+- **Standardized Operator Usage Prompt Catalog**: [OPERATOR_PROMPT_CATALOG.md](docs/OPERATOR_PROMPT_CATALOG.md)
+
+### Repository Lineage & Domain Scope:
+- **Lineage**: `.pipeline/lineage.json` declares self = `DEAP-avionic-flight-safety`, tier 1 `DOMAIN_TEMPLATE_PARENT`, upstream `gintatkinson/DEAP01-spec-core` (sync ref `cb2a223`), child template `DEAP-uas-infrastructure-safety`.
+- **Domain Scope**: `docs/domain/DOMAIN_SCOPE.md` defines the Common Aviation Safety Standards domain boundary; `docs/domain/SYNTHESIS_RESIDUALS.md` catalogs residuals of domain synthesis. Both are synced from core via the weekly tooling drift check.
+- **Catalogs**: `docs/catalogs/STANDARDS_OBLIGATION_CATALOG.md` (DO-178C, DO-254, ARP4754A, ARP4761, MIL-STD-882E obligations) and `docs/catalogs/FLIGHT_SAFETY_CONTROL_PATTERN_CATALOG.md` (canonical flight safety control patterns).
 
 ### Repository Tree:
 ```
-DEAP-uas-infrastructure-safety/
+DEAP-avionic-flight-safety/
 ├── .agents/
-│   └── AGENTS.md                  # Project-scoped agentic governance rules & delegation gates
+│   ├── AGENTS.md                  # Project-scoped agentic governance rules & delegation gates
+│   └── skills -> ../skills        # Mirrored agent skills symlink
 ├── .pipeline/
 │   ├── constitution.md            # Platform-independent functional safety governance tier
-│   └── profiles/
-│       ├── ros2_cpp.md            # ROS2 C++ Real-Time Nodes platform execution profile
-│       └── px4_module.md          # PX4 Autopilot Flight Module platform execution profile
+│   ├── lineage.json               # Machine-readable repository lineage & hierarchy metadata
+│   └── profiles/                  # Decoupled platform execution profiles
 ├── docs/
+│   ├── catalogs/                  # Standards obligation & flight safety control pattern catalogs
+│   │   ├── FLIGHT_SAFETY_CONTROL_PATTERN_CATALOG.md
+│   │   └── STANDARDS_OBLIGATION_CATALOG.md
 │   ├── conops/                    # Customer mission intent & Concept of Operations landing zone
+│   ├── domain/                    # Domain scope & synthesis residuals
+│   │   ├── DOMAIN_SCOPE.md
+│   │   └── SYNTHESIS_RESIDUALS.md
+│   ├── OPERATOR_PROMPT_CATALOG.md # Standardized operator usage prompt catalog
 │   ├── safety/                    # STPA hazard analysis, FMECA & SORA SAIL landing zone
-│   └── architecture/
-│       └── blueprints/            # Canonical architecture specifications & multi-provider blueprints
+│   └── architecture/              # Architecture blueprints & master specifications
 ├── schema/
 │   └── README.md                  # Input structural schemas & SysML v2 models guide
+├── skills/                        # Canonical agent skills corpus
 ├── tests/
-│   └── test_uas_safety_governance.py      # Automated UAS safety compliance & MBSE test suite
+│   ├── test_baseline.py           # Automated repository baseline & compliance test suite
+│   ├── test_canonical_templates.py# Canonical template & landing zone verification suite
+│   └── test_safety_integrity.py   # Safety integrity & trace validation tests
 ├── pyproject.toml                 # Pytest & verification configuration
 └── README.md                      # Platform master specification & usage guide
 ```
@@ -131,13 +145,13 @@ bash scripts/install_pipeline.sh <target_dir> -p gitlab --gitlab-url https://git
 #### Single-Command Remote Bootstrap
 ```bash
 # GitHub Remote Bootstrap
-git clone https://github.com/gintatkinson/DEAP-uas-infrastructure-safety.git /tmp/deap_installer && bash /tmp/deap_installer/scripts/install_pipeline.sh . -p github && rm -rf /tmp/deap_installer
+git clone https://github.com/gintatkinson/DEAP-avionic-flight-safety.git /tmp/deap_installer && bash /tmp/deap_installer/scripts/install_pipeline.sh . -p github && rm -rf /tmp/deap_installer
 
 # GitLab SaaS Remote Bootstrap
-git clone https://github.com/gintatkinson/DEAP-uas-infrastructure-safety.git /tmp/deap_installer && bash /tmp/deap_installer/scripts/install_pipeline.sh . -p gitlab --gitlab-group <group> && rm -rf /tmp/deap_installer
+git clone https://github.com/gintatkinson/DEAP-avionic-flight-safety.git /tmp/deap_installer && bash /tmp/deap_installer/scripts/install_pipeline.sh . -p gitlab --gitlab-group <group> && rm -rf /tmp/deap_installer
 
 # GitLab Self-Hosted / Air-Gapped Remote Bootstrap
-git clone https://github.com/gintatkinson/DEAP-uas-infrastructure-safety.git /tmp/deap_installer && bash /tmp/deap_installer/scripts/install_pipeline.sh . -p gitlab --gitlab-url https://gitlab.internal.defense.gov --gitlab-group <group> && rm -rf /tmp/deap_installer
+git clone https://github.com/gintatkinson/DEAP-avionic-flight-safety.git /tmp/deap_installer && bash /tmp/deap_installer/scripts/install_pipeline.sh . -p gitlab --gitlab-url https://gitlab.internal.defense.gov --gitlab-group <group> && rm -rf /tmp/deap_installer
 ```
 
 > **Note**: `install_pipeline.sh` automatically copies `skills`, `rules`, `schema`, `.pipeline`, `.agents`, and `scripts`, updates `.gitignore`, and sets up git hooks directly into your project root in a single automated turnkey step.
@@ -147,7 +161,7 @@ git clone https://github.com/gintatkinson/DEAP-uas-infrastructure-safety.git /tm
 Alternatively, copy the pipeline directories and templates into your project repository manually:
 
 ```bash
-git clone https://github.com/gintatkinson/DEAP-uas-infrastructure-safety.git ./.tmp-pipeline
+git clone https://github.com/gintatkinson/DEAP-avionic-flight-safety.git ./.tmp-pipeline
 rm -rf ./skills ./rules ./.pipeline ./.agents ./scripts ./schema ./tests
 cp -RP ./.tmp-pipeline/skills ./
 cp -RP ./.tmp-pipeline/rules ./

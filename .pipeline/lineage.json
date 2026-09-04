@@ -1,0 +1,12 @@
+{
+  "self": "DEAP-avionic-flight-safety",
+  "tier": 1,
+  "role": "DOMAIN_TEMPLATE_PARENT",
+  "domain": "common_aviation_safety_standards",
+  "upstream": "gintatkinson/DEAP01-spec-core",
+  "upstream_sync_ref": "cb2a223",
+  "children": [
+    "DEAP-uas-infrastructure-safety"
+  ],
+  "bootstrap": "scripts/install_pipeline.sh"
+}
