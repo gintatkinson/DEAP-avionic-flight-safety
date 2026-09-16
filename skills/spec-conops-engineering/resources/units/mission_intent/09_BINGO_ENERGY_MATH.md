@@ -4,7 +4,7 @@
 | **Version** | 1.0.0 |
 | **Date** | 2026-09-02 |
 
-## 9. Bingo Energy Mathematics & Secondary Divert Protocols
+## 9. Critical Energy Threshold Mathematics & Secondary Divert Protocols
 
 In accordance with INCOSE Systems Engineering Handbook v5.0 (§3.2) and safety-critical resource management baselines, safe mission execution is guaranteed by continuous parametric computation of the dynamic resource threshold $R_{\mathrm{threshold}}(t)$ and enforcement of the mandatory statutory resource reserve ratio $\text{Ratio}_{\text{reserve\_min}} \ge 0.20$.
 
@@ -37,7 +37,7 @@ $$
 | Secondary Divert Energy | E_divert | {{E_DIVERT_JOULES:60000.0}} | J | E_divert = (Distance / v_nominal) * P_nominal | INCOSE SEH v5.0 §3.2 |
 | Mandatory Statutory Reserve | E_reserve | {{E_RESERVE_JOULES:100000.0}} | J | E_reserve >= Ratio_reserve_min * E_capacity (20.0% statutory reserve threshold) | INCOSE SEH v5.0 §3.2 |
 | Contingency Buffer | E_contingency | {{E_CONTINGENCY_JOULES:40000.0}} | J | E_contingency >= E_contingency_min | INCOSE SEH v5.0 §3.2 |
-| Total Bingo Threshold | E_bingo | {{E_BINGO_JOULES:350000.0}} | J | E_bingo = E_return + E_divert + E_reserve + E_contingency | INCOSE SEH v5.0 §3.2 |
+| Total Critical Threshold | E_critical | {{E_CRITICAL_JOULES:350000.0}} | J | E_critical = E_return + E_divert + E_reserve + E_contingency | INCOSE SEH v5.0 §3.2 |
 | Calculated Reserve Ratio | Ratio_reserve | 0.20 | Dimensionless | Ratio_reserve = E_reserve / E_capacity >= 0.20 | INCOSE SEH v5.0 §3.2 |
 
 ---
@@ -48,9 +48,9 @@ When the primary recovery location is unavailable (obstruction, localized enviro
 
 | Recovery Site ID | Site Classification | Location State | Elevation / Level | Dimension Envelope | Priority Order | Ingress Clearance |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `LZ-PRIMARY` | Primary Base Recovery Location | p_LZ_primary | h_LZ_primary | L_primary x W_primary | Priority 1 (Nominal) | Unrestricted Path |
-| `LZ-DIVERT-ALPHA` | Secondary Divert Recovery Site | p_LZ_divert_alpha | h_LZ_divert_alpha | L_alpha x W_alpha | Priority 2 (Secondary) | Obstacle Clearance Verified |
-| `LZ-DIVERT-BRAVO` | Tertiary Emergency Safe Location | p_LZ_divert_bravo | h_LZ_divert_bravo | L_bravo x W_bravo | Priority 3 (Contingency) | Boundary Standoff Verified |
+| `RS-PRIMARY` | Primary Base Recovery Location | p_RS_primary | h_RS_primary | L_primary x W_primary | Priority 1 (Nominal) | Unrestricted Path |
+| `RS-DIVERT-ALPHA` | Secondary Divert Recovery Site | p_RS_divert_alpha | h_RS_divert_alpha | L_alpha x W_alpha | Priority 2 (Secondary) | Obstacle Clearance Verified |
+| `RS-DIVERT-BRAVO` | Tertiary Emergency Safe Location | p_RS_divert_bravo | h_RS_divert_bravo | L_bravo x W_bravo | Priority 3 (Contingency) | Boundary Standoff Verified |
 
-- **Autonomous Divert Protocol:** If $R_{\mathrm{current}} \le R_{\mathrm{threshold}}$ and `LZ-PRIMARY` reports obstruction, the executive controller commands immediate divert to `LZ-DIVERT-ALPHA` within $t_{\mathrm{resp}} \le \tau_{\mathrm{containment}}$, adjusting operating profile for optimal specific resource range.
+- **Autonomous Divert Protocol:** If $R_{\mathrm{current}} \le R_{\mathrm{threshold}}$ and `RS-PRIMARY` reports obstruction, the executive controller commands immediate divert to `RS-DIVERT-ALPHA` within $t_{\mathrm{resp}} \le \tau_{\mathrm{containment}}$, adjusting operating profile for optimal specific resource range.
 - **Public Clause Citation:** INCOSE SEH v5.0 §3.2

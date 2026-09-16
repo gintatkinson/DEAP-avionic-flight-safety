@@ -4,7 +4,7 @@
 | **Version** | 1.0.0 |
 | **Date** | 2026-09-02 |
 
-## 7. Airspace Deconfliction & U-space Dynamic Geo-Zones
+## 7. Operational Boundary Deconfliction & Dynamic Spatial Zones
 
 In accordance with ISO/IEC/IEEE 29148:2018 and MIL-STD-882E (§4.3), operational state boundary deconfliction is assured through multi-layered spatial containment boundaries, dynamic keep-out zones, and formal separation minima.
 
@@ -20,7 +20,7 @@ In accordance with ISO/IEC/IEEE 29148:2018 and MIL-STD-882E (§4.3), operational
 ---
 
 ### 7.2 Dynamic Exclusion Zones (Pop-Up State Zones)
-- **Dynamic Keep-Out Volumes:** Tactical coordination updates broadcast via datalink inject dynamic keep-out volumes into the flight guidance computer.
+- **Dynamic Keep-Out Volumes:** Tactical coordination updates broadcast via datalink inject dynamic keep-out volumes into the guidance management system.
 - **Critical Infrastructure Standoff:** Automated exclusion volume of radius $R_{\mathrm{exclusion}}$ spanning $[x_{\text{ex\_floor}}, x_{\text{ex\_ceiling}}]$ around protected entities and populated assemblies.
 - **Temporary State Restrictions:** Real-time ingestion of temporary exclusion polygons with automated dynamic trajectory re-planning.
 - **Public Clause Citation:** MIL-STD-882E §4.3

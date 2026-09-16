@@ -42,8 +42,8 @@ The operational system boundary encompasses all physical, logical, communication
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | Ω_state | State Space Domain | Admissible operational state space envelope (Ω_state ⊂ R^n) | Compact subset of R^n (n >= 6) | Dimensionless | {{STATE_SPACE_STANDARD:ISO/IEC/IEEE 29148:2018 §6.4.2}} |
 | X_boundary | State Vector Bounds | Bounding box of admissible vehicle operational states [x_min, x_max]^T | Bounded hyper-rectangle | Mixed SI Units | {{SAFETY_BOUNDS_STANDARD:ASTM F3269-17 §6.2}} |
-| x_min | State Lower Limit | Minimum permissible state vector threshold | {{STATE_VECTOR_MIN_EXPRESSION:[phi_min, lambda_min, h_min, u_min, v_min, w_min]^T}} | {{STATE_VECTOR_MIN_UNITS:rad, rad, m, m/s}} | {{STATE_SAFETY_MITIGATION:SORA Annex B M1 Mitigations}} |
-| x_max | State Upper Limit | Maximum permissible state vector threshold | {{STATE_VECTOR_MAX_EXPRESSION:[phi_max, lambda_max, h_max, u_max, v_max, w_max]^T}} | {{STATE_VECTOR_MAX_UNITS:rad, rad, m/s}} | {{STATE_SAFETY_MITIGATION:SORA Annex B M1 Mitigations}} |
+| x_min | State Lower Limit | Minimum permissible state vector threshold | {{STATE_VECTOR_MIN_EXPRESSION:[phi_min, lambda_min, h_min, u_min, v_min, w_min]^T}} | {{STATE_VECTOR_MIN_UNITS:rad, rad, m, m/s, m/s, m/s}} | {{STATE_SAFETY_MITIGATION:SORA Annex B M1 Mitigations}} |
+| x_max | State Upper Limit | Maximum permissible state vector threshold | {{STATE_VECTOR_MAX_EXPRESSION:[phi_max, lambda_max, h_max, u_max, v_max, w_max]^T}} | {{STATE_VECTOR_MAX_UNITS:rad, rad, m, m/s, m/s, m/s}} | {{STATE_SAFETY_MITIGATION:SORA Annex B M1 Mitigations}} |
 | R_buffer | Spatial Containment | Verified 1:1 parametric lateral containment safety buffer radius | R_buffer >= 1.0 * Distance_containment | {{CONTAINMENT_BUFFER_UNIT:m}} | {{CONTAINMENT_STANDARD:JARUS SORA v2.5 Step #2}} |
 | Range_max(Link_C2) | C2 Comms Margin | Maximum certified C2 data link operational range | Range_max >= Range_nominal | km | {{C2_STANDARD:RTCA DO-362A §2.2.1}} |
 | tau_containment | Emergency Response | Maximum allowable failsafe containment response time | tau_containment <= 2.0 | s | {{CONTAINMENT_RESPONSE_STANDARD:ASTM F3269-17 §7.1}} |
@@ -158,57 +158,63 @@ The following Unified Architecture Framework (UAF) operational context diagram d
 ```mermaid
 flowchart TB
     subgraph SpaceSegment["Space & Orbital Segment"]
+        direction TB
         GNSSConstellation["GNSS Satellite Constellation<br/>(InterfacePort: GNSSService)"]
-        SatcomRelay["SATCOM Satellite Network<br/>(InterfacePort: SatcomRelayService)"]
+        SatcomRelay["SATCOM Satellite Network<br/>(InterfacePort:<br/>SatcomRelayService)"]
     end
 
-    subgraph VehicleSegment["Cyber-Physical Vehicle Segment (System Under Design)"]
+    subgraph VehicleSegment["Cyber-Physical Vehicle Segment<br/>(System Under Design)"]
+        direction TB
         CoreController["Core Controller Subsystem<br/>(PerformerNode: CoreController)"]
         SensorSuite["Integrated Sensor Suite<br/>(PerformerNode: SensorSuite)"]
-        ActuatorSubsystem["Propulsion & Actuator Subsystem<br/>(PerformerNode: ActuatorSubsystem)"]
+        ActuatorSubsystem["Propulsion & Actuator Subsystem<br/>(PerformerNode:<br/>ActuatorSubsystem)"]
         PayloadSubsystem["Mission Processing Payload<br/>(PerformerNode: PayloadSubsystem)"]
         VehicleComms["PACE Communications Node<br/>(InterfacePort: VehicleComms)"]
         SafetyWatchdog["Independent Safety Watchdog<br/>(PerformerNode: SafetyWatchdog)"]
     end
 
     subgraph ControlSegment["Control & Infrastructure Segment"]
+        direction TB
         OperatorConsole["Supervisory Operator Console<br/>(PerformerNode: OperatorConsole)"]
         GroundCommsArray["Communications Gateway Array<br/>(InterfacePort: GroundGateway)"]
         InfrastructureHub["Infrastructure & Cloud Hub<br/>(PerformerNode: InfrastructureHub)"]
     end
 
-    subgraph SupportSegment["Support & Ground Support Equipment (GSE) Segment"]
+    subgraph SupportSegment["Support & Ground Support<br/>Equipment (GSE) Segment"]
+        direction TB
         GroundSupportEquipment["GSE Diagnostic & Power Station<br/>(PerformerNode: GSEStation)"]
-        MaintenanceTerminal["Field Maintenance Terminal<br/>(PerformerNode: MaintenanceTerminal)"]
+        MaintenanceTerminal["Field Maintenance Terminal<br/>(PerformerNode:<br/>MaintenanceTerminal)"]
     end
 
-    subgraph OperationalRoles["Operational Roles (Human Stakeholders)"]
+    subgraph OperationalRoles["Operational Roles<br/>(Human Stakeholders)"]
+        direction TB
         SystemOperator["System Operator<br/>(UserRole: SystemOperator)"]
         SafetySupervisor["Safety Supervisor<br/>(UserRole: SafetySupervisor)"]
         OperationsCoordinator["Operations Coordinator<br/>(UserRole: OperationsCoordinator)"]
         MaintenanceTechnician["Maintenance Technician<br/>(UserRole: MaintenanceTechnician)"]
     end
 
-    subgraph ExternalAuthorities["External Authorities & Regulatory Services"]
-        AirspaceAuthority["Civil Aviation & Airspace Authority / UTM<br/>(InterfacePort: UTMService)"]
+    subgraph ExternalAuthorities["External Authorities &<br/>Regulatory Services"]
+        direction TB
+        AirspaceAuthority["Civil Aviation & Airspace<br/>Authority - UTM<br/>(InterfacePort: UTMService)"]
         WeatherDataService["Meteorological & Weather Service<br/>(InterfacePort: WeatherService)"]
     end
 
     GNSSConstellation -->|"1. Positioning & Timing Signals"| SensorSuite
     SatcomRelay ---|"2. Emergency SATCOM C2 Link"| VehicleComms
-    VehicleComms ---|"3. Primary/Alternate PACE Datalink"| GroundCommsArray
+    VehicleComms ---|"3. Primary - Alternate PACE<br/>Datalink"| GroundCommsArray
     SensorSuite -->|"4. Raw & Filtered State Telemetry"| CoreController
     CoreController -->|"5. Deterministic Actuation Demands"| ActuatorSubsystem
     PayloadSubsystem -->|"6. High-Throughput Feature Data"| CoreController
     SafetyWatchdog -.->|"7. Safety Veto & Failsafe Interlock"| ActuatorSubsystem
     GroundCommsArray ---|"8. Telemetry & Control Bus"| OperatorConsole
-    OperatorConsole ---|"9. Cloud Telemetry & Mission Archiving"| InfrastructureHub
+    OperatorConsole ---|"9. Cloud Telemetry &<br/>Mission Archiving"| InfrastructureHub
     SystemOperator ---|"10. Supervisory Mission Control"| OperatorConsole
-    SafetySupervisor ---|"11. Safety Monitor & Emergency Veto"| OperatorConsole
+    SafetySupervisor ---|"11. Safety Monitor &<br/>Emergency Veto"| OperatorConsole
     OperationsCoordinator -->|"12. Flight Plan & Mission Tasking"| SystemOperator
-    MaintenanceTechnician ---|"13. Diagnostic Calibration & BIT Checkout"| MaintenanceTerminal
-    GroundSupportEquipment ---|"14. Power Charging & GSE Umbilical Link"| CoreController
-    OperatorConsole ---|"15. Dynamic Geo-Zone & Flight Authorization"| AirspaceAuthority
+    MaintenanceTechnician ---|"13. Diagnostic Calibration &<br/>BIT Checkout"| MaintenanceTerminal
+    GroundSupportEquipment ---|"14. Power Charging &<br/>GSE Umbilical Link"| CoreController
+    OperatorConsole ---|"15. Dynamic Geo-Zone &<br/>Flight Authorization"| AirspaceAuthority
 ```
 
 ### 1.5 Normative Standards & Regulatory Baseline
@@ -216,7 +222,7 @@ The following normative standards and regulatory baselines govern all architectu
 
 | Standard ID | Issuing Body | Title & Baseline Edition | Applicable Clauses & Focus Areas |
 | :--- | :--- | :--- | :--- |
-| ISO/IEC/IEEE 29148:2018 | ISO / IEC / IEEE | Systems and Software Engineering — Life Cycle Processes — Requirements Engineering | §5.2.4 ConOps Development Process, §6.4.2 Concept of Operations Baseline Specification, §6.4.3 Operational Concept Document Structure |
+| ISO/IEC/IEEE 29148:2018 | ISO / IEC / IEEE | Systems and Software Engineering -- Life Cycle Processes -- Requirements Engineering | §5.2.4 ConOps Development Process, §6.4.2 Concept of Operations Baseline Specification, §6.4.3 Operational Concept Document Structure |
 | INCOSE SEH v5.0 | INCOSE | Systems Engineering Handbook (5th Edition) | §3.3 Operational Concepts & §4.2 Requirements Engineering |
 | OMG UAF v2.0 | OMG | Unified Architecture Framework Specification | Operational Domain Views (Op-Pr, Op-Tx, Op-Is) |
 | MIL-STD-882E | US Department of Defense | Department of Defense Standard Practice: System Safety | §4.3 System Safety Process, Task 102 System Safety Program Plan, Task 202 Operational Hazard Analysis (OHA), Task 205 Hazard Tracking System |

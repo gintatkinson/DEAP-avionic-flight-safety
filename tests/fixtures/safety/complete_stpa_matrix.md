@@ -79,28 +79,42 @@ Systematic identification across the 4 STPA guide word / failure mode categories
 - **SC-1**: The control system shall maintain the platform state within the declared safe envelope under all operating conditions.
 - **SC-2**: The Run-Time Assurance monitor shall transition to the certified safe state within the reaction budget of envelope violation detection.
 
+### 6.1 Stateflow Synthesis Hooks & Safety Statecharts
+
+The formal safety statecharts and Run-Time Assurance supervisory monitors (`RTA`) are synthesized directly into **MATLAB / Simulink / Stateflow** charts for envelope protection.
+
+```mermaid
+stateDiagram-v2
+    [*] --> RTA_Nominal
+    RTA_Nominal --> RTA_Intervention: "envelope_violation [margin < 0]"
+    RTA_Intervention --> RTA_Recovery: "recovery_command"
+    RTA_Recovery --> RTA_Nominal: "safe_state_restored"
+```
+
 ---
 
 ## 7. FMECA Criticality Matrix
 
-| Failure ID | Component / Subsystem | Failure Mode | Local Effect | System Effect | S | O | D | RPN | Mitigating Design Control |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| FM-01 | Unit-01 | Mode Drift | Local Degradation | System Loss L-1 | 4 | 2 | 2 | 16 | Redundant Path 01 |
-| FM-02 | Unit-02 | Mode Drift | Local Degradation | System Loss L-1 | 4 | 2 | 2 | 16 | Redundant Path 02 |
-| FM-03 | Unit-03 | Mode Drift | Local Degradation | System Loss L-1 | 4 | 2 | 2 | 16 | Redundant Path 03 |
-| FM-04 | Unit-04 | Mode Drift | Local Degradation | System Loss L-1 | 4 | 2 | 2 | 16 | Redundant Path 04 |
-| FM-05 | Unit-05 | Mode Drift | Local Degradation | System Loss L-1 | 4 | 2 | 2 | 16 | Redundant Path 05 |
-| FM-06 | Unit-06 | Mode Drift | Local Degradation | System Loss L-1 | 4 | 2 | 2 | 16 | Redundant Path 06 |
-| FM-07 | Unit-07 | Mode Drift | Local Degradation | System Loss L-1 | 4 | 2 | 2 | 16 | Redundant Path 07 |
-| FM-08 | Unit-08 | Mode Drift | Local Degradation | System Loss L-1 | 4 | 2 | 2 | 16 | Redundant Path 08 |
-| FM-09 | Unit-09 | Mode Drift | Local Degradation | System Loss L-1 | 4 | 2 | 2 | 16 | Redundant Path 09 |
-| FM-10 | Unit-10 | Mode Drift | Local Degradation | System Loss L-1 | 4 | 2 | 2 | 16 | Redundant Path 10 |
-| FM-11 | Unit-11 | Mode Drift | Local Degradation | System Loss L-1 | 4 | 2 | 2 | 16 | Redundant Path 11 |
-| FM-12 | Unit-12 | Mode Drift | Local Degradation | System Loss L-1 | 4 | 2 | 2 | 16 | Redundant Path 12 |
-| FM-13 | Unit-13 | Mode Drift | Local Degradation | System Loss L-1 | 4 | 2 | 2 | 16 | Redundant Path 13 |
-| FM-14 | Unit-14 | Mode Drift | Local Degradation | System Loss L-1 | 4 | 2 | 2 | 16 | Redundant Path 14 |
-| FM-15 | Unit-15 | Mode Drift | Local Degradation | System Loss L-1 | 4 | 2 | 2 | 16 | Redundant Path 15 |
-| FM-16 | Unit-16 | Mode Drift | Local Degradation | System Loss L-1 | 4 | 2 | 2 | 16 | Redundant Path 16 |
+| Failure ID | Component / Subsystem | Failure Mode | Local Effect | System Effect | S | O | D | RPN | Mitigating Design Control | Basis |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| FM-01 | Unit-01 | Sensor Bias Drift | Local Degradation | System Loss L-1 | 4 | 2 | 2 | 16 | Redundant Path 01 | SSOT |
+| FM-02 | Unit-01 | Stuck-at Signal Output | Local Interruption | System Loss L-1 | 5 | 2 | 2 | 20 | Dual Channel Cross-Check | SSOT |
+| FM-03 | Unit-01 | Noise / Spurious Transients | Signal Jitter | Hazard H-1 | 3 | 3 | 2 | 18 | Kalman Filtering | Derived |
+| FM-04 | Unit-02 | Memory Buffer Overflow | Frame Drop | System Loss L-1 | 4 | 2 | 2 | 16 | Circular Buffer Limiter | SSOT |
+| FM-05 | Unit-02 | Deadlock in Task Scheduler | Processing Freeze | System Loss L-1 | 5 | 1 | 2 | 10 | Hardware Watchdog Reset | Derived |
+| FM-06 | Unit-02 | Parameter Flash Corruption | Configuration Fault | Hazard H-1 | 4 | 2 | 2 | 16 | CRC32 Integrity Check | SSOT |
+| FM-07 | Unit-03 | Actuator Command Desync | Command Delay | System Loss L-1 | 4 | 2 | 2 | 16 | Heartbeat Monitor | SSOT |
+| FM-08 | Unit-03 | Torque Saturation | Authority Limit Exceeded | Hazard H-1 | 3 | 2 | 3 | 18 | Rate Limiter Clamping | Derived |
+| FM-09 | Unit-03 | Power Voltage Sag | Brownout Reset | System Loss L-1 | 5 | 1 | 2 | 10 | Backup Power Rail | SSOT |
+| FM-10 | Unit-04 | Telemetry Frame Loss | Uplink Timeout | System Loss L-1 | 3 | 3 | 2 | 18 | Auto-Reconnection Protocol | SSOT |
+| FM-11 | Unit-04 | Packet Checksum Failure | Rejected Packet | Hazard H-1 | 2 | 3 | 2 | 12 | Retransmission Queue | Derived |
+| FM-12 | Unit-04 | Transceiver Bus Lockup | Bus Inoperable | System Loss L-1 | 4 | 2 | 2 | 16 | Bus Reset Supervisor | SSOT |
+| FM-13 | Unit-05 | Thermal Overload | Thermal Throttling | Hazard H-1 | 3 | 2 | 2 | 12 | Active Cooling System | SSOT |
+| FM-14 | Unit-05 | Clock Drift / Jitter | Phase Offset | Hazard H-1 | 3 | 2 | 2 | 12 | PTP Sync Loop | Derived |
+| FM-15 | Unit-05 | Supply Voltage Undervoltage | Logic Reset | System Loss L-1 | 4 | 2 | 2 | 16 | Power Rail Supervisor | SSOT |
+| FM-16 | Unit-06 | Safe State Transition Failure | Uncommanded Motion | System Loss L-1 | 5 | 1 | 2 | 10 | Independent Interlock Circuit | SSOT |
+| FM-17 | Unit-06 | False Positive Envelope Trip | Spurious Abort | Hazard H-1 | 2 | 3 | 2 | 12 | Multi-Sensor Voting | Derived |
+| FM-18 | Unit-06 | Output Stage Short Circuit | Total Loss of Unit | System Loss L-1 | 5 | 1 | 2 | 10 | Overcurrent Crowbar | SSOT |
 
 ---
 
@@ -112,30 +126,32 @@ Systematic identification across the 4 STPA guide word / failure mode categories
 
 ### Operational Safety Objectives (OSO-01 through OSO-24)
 
-- **OSO-01**: Robustness Level High / Satisfied via Architecture
-- **OSO-02**: Robustness Level High / Satisfied via Architecture
-- **OSO-03**: Robustness Level High / Satisfied via Architecture
-- **OSO-04**: Robustness Level High / Satisfied via Architecture
-- **OSO-05**: Robustness Level High / Satisfied via Architecture
-- **OSO-06**: Robustness Level High / Satisfied via Architecture
-- **OSO-07**: Robustness Level High / Satisfied via Architecture
-- **OSO-08**: Robustness Level High / Satisfied via Architecture
-- **OSO-09**: Robustness Level High / Satisfied via Architecture
-- **OSO-10**: Robustness Level High / Satisfied via Architecture
-- **OSO-11**: Robustness Level High / Satisfied via Architecture
-- **OSO-12**: Robustness Level High / Satisfied via Architecture
-- **OSO-13**: Robustness Level High / Satisfied via Architecture
-- **OSO-14**: Robustness Level High / Satisfied via Architecture
-- **OSO-15**: Robustness Level High / Satisfied via Architecture
-- **OSO-16**: Robustness Level High / Satisfied via Architecture
-- **OSO-17**: Robustness Level High / Satisfied via Architecture
-- **OSO-18**: Robustness Level High / Satisfied via Architecture
-- **OSO-19**: Robustness Level High / Satisfied via Architecture
-- **OSO-20**: Robustness Level High / Satisfied via Architecture
-- **OSO-21**: Robustness Level High / Satisfied via Architecture
-- **OSO-22**: Robustness Level High / Satisfied via Architecture
-- **OSO-23**: Robustness Level High / Satisfied via Architecture
-- **OSO-24**: Robustness Level High / Satisfied via Architecture
+| OSO ID | Robustness Level | Compliance Justification | Mitigation Reference |
+| :--- | :--- | :--- | :--- |
+| OSO-01 | High | Satisfied via Architecture | M1 |
+| OSO-02 | High | Satisfied via Architecture | M1 |
+| OSO-03 | High | Satisfied via Architecture | M1 |
+| OSO-04 | High | Satisfied via Architecture | M1 |
+| OSO-05 | High | Satisfied via Architecture | M1 |
+| OSO-06 | High | Satisfied via Architecture | M1 |
+| OSO-07 | High | Satisfied via Architecture | M1 |
+| OSO-08 | High | Satisfied via Architecture | M1 |
+| OSO-09 | High | Satisfied via Architecture | M1 |
+| OSO-10 | High | Satisfied via Architecture | M1 |
+| OSO-11 | High | Satisfied via Architecture | M1 |
+| OSO-12 | High | Satisfied via Architecture | M1 |
+| OSO-13 | High | Satisfied via Architecture | M1 |
+| OSO-14 | High | Satisfied via Architecture | M1 |
+| OSO-15 | High | Satisfied via Architecture | M1 |
+| OSO-16 | High | Satisfied via Architecture | M1 |
+| OSO-17 | High | Satisfied via Architecture | M1 |
+| OSO-18 | High | Satisfied via Architecture | M1 |
+| OSO-19 | High | Satisfied via Architecture | M1 |
+| OSO-20 | High | Satisfied via Architecture | M1 |
+| OSO-21 | High | Satisfied via Architecture | M1 |
+| OSO-22 | High | Satisfied via Architecture | M1 |
+| OSO-23 | High | Satisfied via Architecture | M1 |
+| OSO-24 | High | Satisfied via Architecture | M1 |
 
 ---
 
