@@ -15,25 +15,30 @@ Airborne safety-critical systems require deterministic, provable fault mitigatio
 ```mermaid
 flowchart TD
     subgraph ArchitectureTiers ["Flight Safety Control Pattern Classification"]
+        direction TB
         subgraph RedundancyTier ["Redundancy & Voting Patterns"]
-            CP01["CP-01: Triple Modular Redundancy (TMR) Majority Voting"]
-            CP03["CP-03: Cross-Channel Data Link (CCDL) Synchronization"]
+            direction TB
+            CP01["CP-01: Triple Modular Redundancy<br/>(TMR) Majority Voting"]
+            CP03["CP-03: Cross-Channel Data Link<br/>(CCDL) Synchronization"]
         end
 
         subgraph AssuranceTier ["Assurance & Reconfiguration Patterns"]
-            CP02["CP-02: Run-Time Assurance (RTA) Dual-Channel Simplex"]
-            CP04["CP-04: Asymmetric Propulsion Reconfiguration Law"]
+            direction TB
+            CP02["CP-02: Run-Time Assurance (RTA)<br/>Dual-Channel Simplex"]
+            CP04["CP-04: Asymmetric Propulsion<br/>Reconfiguration Law"]
         end
 
         subgraph ContainmentTier ["Containment & Interlock Patterns"]
-            CP05["CP-05: Boundary Geofence Active Containment"]
-            CP06["CP-06: Flight Termination System (FTS) Dual-Consent Interlock"]
+            direction TB
+            CP05["CP-05: Boundary Geofence<br/>Active Containment"]
+            CP06["CP-06: Flight Termination System<br/>(FTS) Dual-Consent Interlock"]
         end
     end
 
     RedundancyTier --> AssuranceTier
     AssuranceTier --> ContainmentTier
 ```
+
 
 ---
 

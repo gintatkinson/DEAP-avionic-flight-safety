@@ -13,23 +13,26 @@ Every obligation declared in this catalog corresponds directly to an entry in th
 
 ```mermaid
 flowchart TD
-    subgraph Governance["Normative Aviation Standards Baseline"]
+    subgraph Governance ["Normative Aviation Standards Baseline"]
+        direction TB
         DO178C["RTCA DO-178C (Software)"]
         DO254["RTCA DO-254 (Hardware)"]
-        ARP4754A["SAE ARP4754A (Systems Development)"]
+        ARP4754A["SAE ARP4754A<br/>(Systems Development)"]
         ARP4761["SAE ARP4761 (Safety Assessment)"]
-        MIL882E["MIL-STD-882E (Defense System Safety)"]
+        MIL882E["MIL-STD-882E<br/>(Defense System Safety)"]
     end
 
-    subgraph Inventory["Population Register & Catalogs"]
-        RI["docs/research/RESEARCH_INVENTORY.md"]
-        SOC["docs/catalogs/STANDARDS_OBLIGATION_CATALOG.md"]
+    subgraph Inventory ["Population Register & Catalogs"]
+        direction TB
+        RI["docs - research -<br/>RESEARCH_INVENTORY.md"]
+        SOC["docs - catalogs -<br/>STANDARDS_OBLIGATION_CATALOG.md"]
     end
 
-    subgraph Downstream["Downstream Specification & Model Realization"]
-        Feat["docs/features/*.md"]
-        Safety["docs/safety/*.md"]
-        SysML["schema/*.sysml"]
+    subgraph Downstream ["Downstream Specification & Realization"]
+        direction TB
+        Feat["docs - features - *.md"]
+        Safety["docs - safety - *.md"]
+        SysML["schema - *.sysml"]
     end
 
     DO178C --> RI
