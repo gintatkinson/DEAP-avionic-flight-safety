@@ -27,28 +27,41 @@ This platform explicitly declares **MATLAB / Simulink / Stateflow / Embedded Cod
 - `.pipeline/`: Constitution (`constitution.md`), active governance rules bundle (`ACTIVE_RULES_BUNDLE.md`), domain specifications, and execution profiles (`profiles/ros2_cpp.md`, `profiles/px4_module.md`).
 - `rules/` & `skills/`: Platform engineering rules and agent workflow skills.
 - `schema/`: Contract definitions and SysML v2 schemas.
-- `tests/`: Automated baseline verification and safety compliance tests.
+- `target/release/`: Precompiled native Rust compiler, baseline verification, ConOps assembly, and backlog reconciliation binaries distributed with cryptographic SHA-256 provenance in `.pipeline/toolchain-manifest.json`.
+- Semantic acceptance verification: Automated baseline verification and safety compliance checks via pipeline binaries.
+
+---
+
+## High-Performance Native Rust Toolchain
+
+The repository includes precompiled, high-performance native Rust binaries (`./target/release/`) with cryptographic SHA-256 provenance tracked in `.pipeline/toolchain-manifest.json`, delivering sub-second execution across all core digital engineering compiler gates:
+
+| Binary / Target | Role & Architectural Responsibilities |
+| :--- | :--- |
+| `./target/release/ingest-sysml` | **Ground 0.0 Ingestion Engine**: High-throughput parsing and normalization of unstructured OEM documentation, PDF manuals, BOM markdown tables, and Level 1C ICD registers into canonical SysML v2 textual models. |
+| `./target/release/compile-sysml` | **SysML v2 / KerML Compiler & STPA Transpiler**: Deterministic SysML v2 compilation, semantic validation, bidirectional AST synchronization (`--reverse-sync`, `--forward-sync`), and formal STPA / FMECA constraint transpilation. |
+| `./target/release/assemble-conops` | **ConOps & Mission Intent Assembly Engine**: High-throughput deterministic assembly of modular ConOps and Mission Intent units into canonical master specifications with parameter binding and TOC generation. |
+| `./target/release/reconcile-backlog` | **Backlog Reconciliation Engine**: High-performance bidirectional synchronization of local Markdown specifications, frontmatter metadata, and issue tracker checklists. |
+| `./target/release/verify-baseline` | **Checks 10-40 Quality Gate Verifier**: Ultra-fast baseline conformance, KaTeX math parsing, Mermaid diagram validation, and semantic diagram-to-AST parity auditor. |
 
 ---
 
 ## 3. Customer Project Onboarding & Agent Initialization Sequence
 
-### 3.1 Turnkey Customer Project Onboarding
+### 3.1 Downstream Baseline Verification & Ingestion Workflows (Quick Start)
 
-To install this domain pipeline and its engineering baseline into an end-user customer application workspace, run the following turnkey command from your customer project root directory:
+To verify that all repository issue tracker labels, baseline contracts, and safety specifications pass downstream conformance gates, run:
 
 ```bash
-# Onboard customer application workspace
-git clone https://github.com/gintatkinson/DEAP-avionic-flight-safety.git ./.tmp-pipeline && bash ./.tmp-pipeline/scripts/install_pipeline.sh . && rm -rf ./.tmp-pipeline
+# Run baseline conformance verification (native Rust binary)
+./target/release/verify-baseline . --no-domain
 ```
 
-This single self-contained command operates strictly inside the customer project directory with zero sibling path dependencies.
-
-To update the pipeline and governance rules inside this domain distribution template at any time, run:
+To configure Git hooks and verify local pipeline tooling and governance rules in-place at any time, run:
 
 ```bash
-# Update domain distribution template tooling in-place
-bash scripts/install_pipeline.sh .
+# Configure git hooks and verify local pipeline tooling in-place
+./target/release/verify-baseline setup-hooks . && ./target/release/verify-baseline . --no-domain
 ```
 
 ### 3.2 Mandatory Agent Initialization Sequence
@@ -61,7 +74,7 @@ Immediately following installation, any AI agent (Antigravity, Claude Code, Curs
 2. **Load Project Skills**: Execute `view_file` on `skills/feature-driven-implementation/SKILL.md` (and any active skills under `skills/` or `.agents/skills/`) to initialize feature-driven implementation protocols and review gates.
 3. **Load Governance Rules**: Execute `view_file` on `.pipeline/ACTIVE_RULES_BUNDLE.md` to ingest the complete, consolidated suite of active governance rules in a single read (covering dual-track MBD, SysML SSOT completeness, role boundary locks, and TDD mandates).
 4. **Load Platform Profile**: Read the target platform execution profile (`.pipeline/profiles/flutter.md`, `.pipeline/profiles/react.md`, `.pipeline/profiles/ros2_cpp.md`, or `.pipeline/profiles/px4_module.md`) to establish platform-specific build, test, and lifecycle constraints.
-5. **Bootstrap Tracker Labels & Verify Baseline**: Verify that repository issue tracker labels and baseline conformance pass by running `python3 scripts/verify_downstream_baseline.py --no-domain`.
+5. **Bootstrap Tracker Labels & Verify Baseline**: Verify that repository issue tracker labels and baseline conformance pass by running `./target/release/verify-baseline . --no-domain`.
 
 ---
 
@@ -74,8 +87,8 @@ This catalog contains the complete, unabridged operator prompt suite for executi
 ```mermaid
 flowchart TD
     subgraph P0["Pipeline 0: Pre-Spec Safety Engineering & Model Formulation"]
-        Step00["Step 0.0: Level 0 OEM Ground Truth Ingestion (sysmlv2_ingest.py)"] --> Step0["Step 0: SysML Model Ingestion & Compilation Gate (python3 scripts/compile_sysml.py --compile)"]
-        Step0 -->|"Compiled AST"| W0A["Worker 0A: CONOPS Synthesizer"]
+        Step00["Step 0.0: Level 0 OEM Ground Truth Ingestion (ingest-sysml)"] --> Step0["Step 0: SysML Model Ingestion & Compilation Gate (compile-sysml --compile)"]
+        Step0 -->|"Compiled AST"| W0A["Worker 0A: CONOPS Synthesizer (assemble-conops)"]
         W0A -->|"docs/conops/CONOPS.md"| W0B["Worker 0B: STPA / FMECA Assurer"]
         W0B -->|"docs/safety/STPA_MATRIX.md"| W0C["Worker 0C: SysML Model Author"]
         W0C -->|"schema/DEAP_MODEL.sysml"| W0D["Worker 0D: Interface Specification Worker (Logical ICD & Master Signal Dictionary)"]
@@ -93,7 +106,7 @@ flowchart TD
         Reconcile --> Backlog["Prioritized Backlog Feature"]
         Backlog --> W2A1["Worker 2A.1: Flutter Feature Implementer (app_flutter/)"]
         Backlog --> W2A2["Worker 2A.2: ROS2 / PX4 Real-Time Control Implementer"]
-        Backlog --> W2B["Worker 2B: Dual-Track Simulation Driver (Simulink & Python Twin)"]
+        Backlog --> W2B["Worker 2B: Dual-Track Simulation Driver (Simulink & Digital Twin)"]
         W2A1 & W2A2 & W2B --> Rev1["Stage 1: Spec Compliance Review (Reviewer 1)"]
         Rev1 --> Rev2["Stage 2: Code Quality & Numerical Review (Reviewer 2)"]
         Rev2 --> Chall["Adversarial Challenge Gate (Challengers 1 & 2)"]
@@ -109,7 +122,7 @@ Execute the following prompts in sequence using context-isolated subagents to tr
 #### 4.2.0 Worker 00: OEM Prose / BOM Ingestion & Model Synthesis Prompt (Step 0.0)
 
 **Step 0.0 Entrypoint for Unstructured / Prose Customer Documentation:**
-For customer projects starting with unstructured OEM prose manuals, PDF documentation, markdown tables, or Bill of Materials (BOM) specifications, Worker 00 provides the sanctioned, deterministic entrypoint. Extracting OEM Bill of Materials (BOM) and physical parameters into `schema/extracted/` and synthesizing canonical SysML v2 textual models in `schema/model.sysml` (or `.pipeline/schema.sysml`) is fully authorized under Check 23 (Factual Grounding & Numeric Provenance Gate) and serves as the mandatory precursor to executing the Step 0 compilation gate (`python3 scripts/compile_sysml.py --compile`).
+For customer projects starting with unstructured OEM prose manuals, PDF documentation, markdown tables, or Bill of Materials (BOM) specifications, Worker 00 provides the sanctioned, deterministic entrypoint. Extracting OEM Bill of Materials (BOM) and physical parameters into `schema/extracted/` and synthesizing canonical SysML v2 textual models in `schema/model.sysml` (or `.pipeline/schema.sysml`) is fully authorized under Check 23 (Factual Grounding & Numeric Provenance Gate) and serves as the mandatory precursor to executing the Step 0 compilation gate (`./target/release/compile-sysml --compile`).
 
 ```text
 Execute `view_file` on `skills/spec-orchestrator/SKILL.md` as your very first step before taking any action.
@@ -130,7 +143,7 @@ Execute Level 0 OEM Ground Truth Ingestion and initial SysML v2 textual model sy
 
 2. Canonical SysML v2 Model Synthesis:
    - Execute the Level 0 ingestion translator:
-     python3 skills/spec-orchestrator/scripts/sysmlv2_ingest.py --schema "schema/extracted/" --format markdown --out "schema/model.sysml"
+     ./target/release/ingest-sysml --schema "schema/extracted/" --format markdown --out "schema/model.sysml"
    - Alternatively, synthesize a formal SysML v2 textual model `schema/model.sysml` directly, defining:
      * Root `package` matching the target cyber-physical system.
      * All component definitions as canonical `part def` elements with typed attributes (mass, power, dimensions, channel count, part numbers).
@@ -140,12 +153,12 @@ Execute Level 0 OEM Ground Truth Ingestion and initial SysML v2 textual model sy
 
 3. Compilation Gate Precursor Verification:
    - Verify that the generated `schema/model.sysml` passes the Step 0 SysML Compilation Gate:
-     python3 scripts/compile_sysml.py --compile
+     ./target/release/compile-sysml --compile
    - Ensure `.pipeline/schema.sysml` and `.pipeline/schema-digest.json` are successfully generated without compilation errors.
    - Verify Check 23 compliance (Factual Grounding & Numeric Provenance Gate): all physical parameters and component counts in `schema/model.sysml` strictly match the Level 0 OEM ground truth in `schema/extracted/`.
 
 Defect Filing Directive:
-If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `python3 scripts/file_defect.py`. Issue auto-closing keywords or issue close commands are strictly forbidden.
+If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `./target/release/reconcile-backlog create-issue --label bug` (or `./target/release/verify-baseline check-defect`). Issue auto-closing keywords or issue close commands are strictly forbidden.
 
 PROCEED
 ```
@@ -187,12 +200,12 @@ Execute front-end modular CONOPS and Tactical Mission Intent synthesis for the t
    - KaTeX / LaTeX Math Formatting Mandate: All multi-line aligned equations MUST be enclosed in `\begin{aligned} ... \end{aligned}` within `$$` delimiters on dedicated lines. Bare alignment tabs `&` outside an alignment environment (`aligned`, `matrix`, `cases`) and `\begin{align*}` environments are strictly forbidden. Markdown Table Math Prohibition Rule: Strictly ban `$ ... $` and `$$ ... $$` LaTeX math delimiters inside table headers, rows, and cells; plain text and Unicode (e.g. `Initial S`, `ΔV`, `λ`, `°C`, `≥`, `≤`, `→`, `10⁻⁶`) must be used instead, with 1:1 column count match between header and delimiter rows.
 
 4. Assembly & Verification Gates:
-   - Execute deterministic assembly: `python3 scripts/assemble_conops.py --input-dir docs/conops/units/ --output-dir docs/conops/ --verify`.
-   - Compile master specification documents: `python3 scripts/assemble_conops.py --input-dir docs/conops/units/ --output-dir docs/conops/`.
-   - Gate 26 Validation: Execute `python3 -m unittest tests.test_conops_and_mission_intent_validators`.
+   - Execute deterministic assembly: `./target/release/assemble-conops --input-dir docs/conops/units/ --output-dir docs/conops/ --verify`.
+   - Compile master specification documents: `./target/release/assemble-conops --input-dir docs/conops/units/ --output-dir docs/conops/`.
+   - Gate 26 Validation: Execute `./target/release/verify-baseline . --no-domain`.
 
 Defect Filing Directive:
-If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `python3 scripts/file_defect.py`. Issue auto-closing keywords or issue close commands are strictly forbidden.
+If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `./target/release/reconcile-backlog create-issue --label bug` (or `./target/release/verify-baseline check-defect`). Issue auto-closing keywords or issue close commands are strictly forbidden.
 
 PROCEED
 ```
@@ -285,12 +298,12 @@ Synthesize Level 1C Logical Interface Specifications and Signal Dictionaries fro
 2. Deliverable Generation & Quality Gate:
    - Generate `docs/interfaces/ICD_01_SYSTEM_INTERFACE_MATRIX.md` containing subsystem boundary graphs, N² communication matrix, and topological port bindings.
    - Generate `docs/interfaces/ICD_02_MASTER_SIGNAL_DICTIONARY.md` containing signal identifiers (`SIG-*`), data types, units, sampling frequencies, update rates, latency bounds, and fail-safe default values.
-   - Run Gate 23 ICD completeness validation: `python3 skills/spec-orchestrator/parity_auditor/src/parity_auditor/validators/icd_completeness_validator.py`.
-   - Register the ICD suite under the `icd` issue label using `./skills/spec-orchestrator/scripts/create_issue.sh "<file>" "icd" "<title>"`.
+   - Run Gate 23 ICD completeness validation: `./target/release/verify-baseline . --no-domain`.
+   - Register the ICD suite under the `icd` issue label using `./target/release/reconcile-backlog create-issue "<file>" "icd" "<title>"`.
    - Verify published issue body integrity via live tracker inspection.
 
 Defect Filing Directive:
-If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `python3 scripts/file_defect.py`. Issue auto-closing keywords or issue close commands are strictly forbidden.
+If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `./target/release/reconcile-backlog create-issue --label bug` (or `./target/release/verify-baseline check-defect`). Issue auto-closing keywords or issue close commands are strictly forbidden.
 
 PROCEED
 ```
@@ -321,14 +334,14 @@ Transform structural schemas and SysML v2 AST models into formal Agile Epics and
    - Dispatch fresh context-isolated subagents for each individual Epic and Feature with YAML frontmatter declaring `generation_mode: "subagent"`.
 
 2. Local Validation & Issue Registration:
-   - Execute the local model coverage linter: `./skills/spec-orchestrator/scripts/verify_model_coverage.py --spec-only --allow-missing-specs --only <spec_file>`.
-   - Register Features first via `./skills/spec-orchestrator/scripts/create_issue.sh "<file>" "feature" "<title>"`.
+   - Execute the local model coverage linter: `./target/release/verify-baseline . --spec-only`.
+   - Register Features first via `./target/release/reconcile-backlog create-issue "<file>" "feature" "<title>"`.
    - Verify live published payload on the issue tracker (`gh issue view <ID> --json body` or `glab issue view <ID>`).
    - Inject verified Feature Issue IDs into Epic tasklists.
-   - Register Epics via `./skills/spec-orchestrator/scripts/create_issue.sh "<file>" "epic" "<title>"`.
+   - Register Epics via `./target/release/reconcile-backlog create-issue "<file>" "epic" "<title>"`.
 
 Defect Filing Directive:
-If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `python3 scripts/file_defect.py`. Issue auto-closing keywords or issue close commands are strictly forbidden.
+If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `./target/release/reconcile-backlog create-issue --label bug` (or `./target/release/verify-baseline check-defect`). Issue auto-closing keywords or issue close commands are strictly forbidden.
 
 PROCEED
 ```
@@ -357,12 +370,12 @@ Extract Behavior-Driven Development (BDD) User Stories, UML Sequence Lifelines, 
 
 2. Deliverable Generation & Issue Registration:
    - Dispatch fresh context-isolated subagents per User Story (`docs/user-stories/us-*.md`) with YAML frontmatter (`generation_mode: "subagent"`).
-   - Execute local model coverage linter: `./skills/spec-orchestrator/scripts/verify_model_coverage.py --spec-only --allow-missing-specs --only <spec_file>`.
-   - Register User Stories via `./skills/spec-orchestrator/scripts/create_issue.sh "<file>" "user-story" "<title>"`.
+   - Execute local model coverage linter: `./target/release/verify-baseline . --spec-only`.
+   - Register User Stories via `./target/release/reconcile-backlog create-issue "<file>" "user-story" "<title>"`.
    - Verify live published payload on the issue tracker (`gh issue view <ID> --json body` or `glab issue view <ID>`).
 
 Defect Filing Directive:
-If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `python3 scripts/file_defect.py`. Issue auto-closing keywords or issue close commands are strictly forbidden.
+If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `./target/release/reconcile-backlog create-issue --label bug` (or `./target/release/verify-baseline check-defect`). Issue auto-closing keywords or issue close commands are strictly forbidden.
 
 PROCEED
 ```
@@ -390,12 +403,12 @@ Derive formal UML System Use Cases directly from SysML v2 `use case def` AST blo
 
 2. Realization Matrix & Registration:
    - Construct `## Realization Matrix` resolving specific, unique tracker Issue IDs for each intersecting User Story and Feature.
-   - Execute local model coverage check: `./skills/spec-orchestrator/scripts/verify_model_coverage.py --spec-only --allow-missing-specs --only <spec_file>`.
-   - Register Use Cases via `./skills/spec-orchestrator/scripts/create_issue.sh "<file>" "use-case" "<title>"`.
+   - Execute local model coverage check: `./target/release/verify-baseline . --spec-only`.
+   - Register Use Cases via `./target/release/reconcile-backlog create-issue "<file>" "use-case" "<title>"`.
    - Verify live published payload on the issue tracker (`gh issue view <ID> --json body` or `glab issue view <ID>`).
 
 Defect Filing Directive:
-If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `python3 scripts/file_defect.py`. Issue auto-closing keywords or issue close commands are strictly forbidden.
+If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `./target/release/reconcile-backlog create-issue --label bug` (or `./target/release/verify-baseline check-defect`). Issue auto-closing keywords or issue close commands are strictly forbidden.
 
 PROCEED
 ```
@@ -418,18 +431,18 @@ Synthesize MIL-STD-881E Work Breakdown Structures (WBS), Technical Realization R
 1. WBS & Enterprise Realization Synthesis:
    - Ingest `.pipeline/schema.sysml`, `docs/conops/`, `docs/safety/`, `docs/epics/`, `docs/features/`, `docs/user-stories/`, and `docs/use-cases/`.
    - Synthesize the complete 5-tier WBS hierarchy and 7 concrete Model-Based Design (MBD) work packages per feature (`WP-xxx-SPEC`, `WP-xxx-MAT-PARAM`, `WP-xxx-SL-BLD`, `WP-xxx-PY-DOM`, `WP-xxx-PY-ENG`, `WP-xxx-TST`, `WP-xxx-REP`).
-   - Construct the authoritative 7-Column End-to-End Traceability Matrix linking SysML components, Feature specs, User Stories, MATLAB/Simulink models, Python 250 Hz engines, Pytest verification suites, and DO-178C/DO-331 simulation evidence.
-   - Run the deterministic WBS suite generator: `python3 scripts/generate_wbs_suite.py`.
+   - Construct the authoritative 7-Column End-to-End Traceability Matrix linking SysML components, Feature specs, User Stories, MATLAB/Simulink models, discrete 250 Hz engines, semantic acceptance verification suites, and DO-178C/DO-331 simulation evidence.
+   - Run the deterministic WBS suite validation gate: `./target/release/verify-baseline . --strict`.
 
 2. Deliverable Generation & Issue Registration:
    - Generate `docs/management/WBS_DELIVERABLES_SUITE.md` with CommonMark metadata table.
    - Generate multi-platform export `docs/management/wbs_export_jira_monday_ms_project.csv` (RFC 4180 compliant with Jira, Monday.com, and MS Project field mappings).
    - Generate validated machine-readable JSON AST `docs/management/wbs_export.json`.
-   - Register the WBS suite under the `wbs` issue label using `./skills/spec-orchestrator/scripts/create_issue.sh "docs/management/WBS_DELIVERABLES_SUITE.md" "wbs" "<title>"`.
+   - Register the WBS suite under the `wbs` issue label using `./target/release/reconcile-backlog create-issue "docs/management/WBS_DELIVERABLES_SUITE.md" "wbs" "<title>"`.
    - Verify published issue body integrity via live tracker inspection (`gh issue view <ID> --json body` or `glab issue view <ID>`).
 
 Defect Filing Directive:
-If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `python3 scripts/file_defect.py`. Issue auto-closing keywords or issue close commands are strictly forbidden.
+If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `./target/release/reconcile-backlog create-issue --label bug` (or `./target/release/verify-baseline check-defect`). Issue auto-closing keywords or issue close commands are strictly forbidden.
 
 PROCEED
 ```
@@ -440,29 +453,29 @@ Execute backlog reconciliation and model parity verification across your target 
 
 #### 4.4.1 Option A: GitLab SaaS Reconciliation
 ```bash
-./scripts/reconcile_backlog.py --provider gitlab
+./target/release/reconcile-backlog --provider gitlab
 ```
 
 #### 4.4.2 Option B: GitLab Self-Managed / SCIF Air-Gapped Reconciliation
 ```bash
-./scripts/reconcile_backlog.py --provider gitlab --gitlab-url https://gitlab.internal.defense.gov --project uas-safety/uav-010
+./target/release/reconcile-backlog --provider gitlab --gitlab-url https://gitlab.internal.defense.gov --project uas-safety/uav-010
 ```
 
 #### 4.4.3 Option C: GitHub Issues Reconciliation
 ```bash
-./scripts/reconcile_backlog.py --provider github
+./target/release/reconcile-backlog --provider github
 ```
 
 #### 4.4.4 Option D: Offline Verification & 23-Gate Parity Lock
 ```bash
 # Closed-loop reverse SysML v2 AST synchronization
-python3 scripts/compile_sysml.py --reverse-sync
+./target/release/compile-sysml --reverse-sync
 
 # Offline backlog checklist and status synchronization
-./scripts/reconcile_backlog.py --offline
+./target/release/reconcile-backlog --offline
 
 # 23-Gate Model Coverage & UML Compliance Lock
-./skills/spec-orchestrator/scripts/verify_model_coverage.py schema docs/features --spec-only
+./target/release/verify-baseline . --spec-only
 ```
 
 ### 4.5 Pipeline 2 Autonomous Feature Implementation Prompts
@@ -578,15 +591,15 @@ Execute Two-Path (Dual-Track) Model-Based Design (MBD) simulation synthesis and 
    - Solver & Synthesis Baseline: Configure models for deterministic fixed-step discrete solvers (`FixedStepDiscrete`, $dt = 0.004\,\text{s}$ / 250 Hz) and Embedded Coder DO-178C C / SPARK Ada code synthesis.
 
 2. Track B (Headless CI Digital Twin Engine):
-   - License-Free Discrete Execution Engine: Deliver standalone Python simulation engine (`models/python/<feature_slug>_domain.py` and `models/python/<feature_slug>_engine.py`) executing at identical discrete loop rate ($dt$) with exact transition guards, polynomial transfer curves, and 6-DOF kinematics.
-   - Zero License Blocker CI Harness: Deliver automated regression test suite `tests/test_<feature_slug>_simulation.py` running 100% offline in containerized CI environments without MathWorks licenses.
+   - License-Free Discrete Execution Engine: Deliver standalone native Rust simulation engine (`models/rust_twin/<feature_slug>_domain.rs` and `models/rust_twin/<feature_slug>_engine.rs`) executing at identical discrete loop rate ($dt$) with exact transition guards, polynomial transfer curves, and 6-DOF kinematics.
+   - Zero License Blocker CI Harness: Deliver automated regression test suite verified via `cargo test --workspace` running 100% offline in containerized CI environments without MathWorks licenses.
 
 3. Mathematical & Discrete Equivalence Mandate:
    - Numerical Tolerance Verification: Guarantee state vector and output trajectory error between Track A reference and Track B digital twin satisfies $\|x_{\text{Simulink}} - x_{\text{DigitalTwin}}\|_\infty \le 10^{-6}$.
    - Formal DO-331 Verification Report: Generate comprehensive verification report `docs/reports/simulink_results/<FEATURE-ID>_simulation_results.md` detailing MC/DC coverage mapping, transition truth tables, fault-injection scenarios, and numerical parity logs.
 
 Defect Filing Directive:
-If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `python3 scripts/file_defect.py`. Issue auto-closing keywords or issue close commands are strictly forbidden.
+If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `./target/release/reconcile-backlog create-issue --label bug` (or `./target/release/verify-baseline check-defect`). Issue auto-closing keywords or issue close commands are strictly forbidden.
 
 PROCEED
 ```
@@ -602,12 +615,9 @@ models/
 ├── matlab/
 │   ├── <feature_slug>_params.m            # Track A: MATLAB physical plant & control parameters
 │   └── <feature_slug>_data.sldd           # Track A: Simulink Data Dictionary (data types & signals)
-└── python/
-    ├── <feature_slug>_domain.py           # Track B: Strongly-typed domain models & state vectors
-    └── <feature_slug>_engine.py           # Track B: Standalone discrete-time simulation engine
-
-tests/
-└── test_<feature_slug>_simulation.py      # Automated CI regression suite for Track B engine
+└── rust_twin/
+    ├── <feature_slug>_domain.rs           # Track B: Strongly-typed domain models & state vectors
+    └── <feature_slug>_engine.rs           # Track B: Standalone discrete-time simulation engine
 
 docs/reports/simulink_results/
 └── <FEATURE-ID>_simulation_results.md     # Formal DO-331 simulation & numerical parity report
@@ -621,11 +631,11 @@ docs/reports/simulink_results/
 2. **`models/matlab/<feature_slug>_params.m` & `.sldd` (Track A Dictionaries)**:
    Declares physical plant constants, control gains, rate limits, sensor noise variances, and discrete sample time ($dt = 0.004\,\text{s}$ / 250 Hz) in typed MATLAB structures and Simulink Data Dictionaries.
 
-3. **`models/python/<feature_slug>_domain.py` & `_engine.py` (Track B Digital Twin)**:
-   Pure Python, license-free, headless discrete simulation engine executing identical algebraic formulations, cubic polynomial blending curves ($\lambda(\tau) = 3\tau^2 - 2\tau^3$), and safety transition guards. Exposes typed state vectors and `step(dt, inputs) -> outputs` execution interface.
+3. **Track B Digital Twin Engine**:
+   License-free, headless discrete simulation engine executing identical algebraic formulations, cubic polynomial blending curves ($\lambda(\tau) = 3\tau^2 - 2\tau^3$), and safety transition guards. Exposes typed state vectors and `step(dt, inputs) -> outputs` execution interface.
 
-4. **`tests/test_<feature_slug>_simulation.py` (Automated CI Verification Suite)**:
-   Pytest / Unittest test suite executing offline in CI/CD runners without MathWorks license blockers. Validates nominal control tracks, fault-injection responses, emergency safety transitions, and state invariants.
+4. **Automated CI Verification Suite (`cargo test --workspace`)**:
+   Native Rust test suite executing offline in CI/CD runners without MathWorks license blockers. Validates nominal control tracks, fault-injection responses, emergency safety transitions, and state invariants.
 
 5. **`docs/reports/simulink_results/<FEATURE-ID>_simulation_results.md` (DO-331 Verification Report)**:
    Formal DO-178C / DO-331 verification deliverable documenting mathematical equivalence, step-by-step state transition logs, fault injection test results, and numerical tolerance parity ($\le 10^{-6}$).
@@ -638,5 +648,5 @@ Execute baseline and safety governance verification:
 
 ```bash
 # Run downstream conformance gate
-python3 scripts/verify_downstream_baseline.py --no-domain
+./target/release/verify-baseline . --no-domain
 ```

@@ -54,8 +54,8 @@ This skill integrates subagent-driven development, TDD execution discipline, two
 6. **Dual-Track MBD Definition of Done (DoD) Scoping**:
    For any feature involving control laws, flight guidance, physical estimation, or safety statecharts, verify and enforce the Dual-Track MBD deliverables governed by `rules/dual-track-mbd-verification.md` and `docs/architecture/blueprints/SYSML_SSOT_BIDIRECTIONAL_SYNCHRONIZATION_ARCHITECTURE.md`:
    - **Track A (Native MATLAB / Simulink Synthesis)**: Programmatic model construction script (`models/scripts/build_<feature_slug>_model.m`), physical parameter dictionary (`models/matlab/<feature_slug>_params.m`), and Simulink Data Dictionary (`models/matlab/<feature_slug>_data.sldd`) configured for deterministic discrete solvers (`FixedStepDiscrete`) and Embedded Coder DO-178C C / SPARK Ada code synthesis.
-   - **Track B (Headless CI Digital Twin Engine)**: Standalone, license-free discrete-time execution engine (`models/python/<feature_slug>_domain.py` and `models/python/<feature_slug>_engine.py`) executing at the exact same discrete loop rate ($dt$, e.g. 250 Hz / 0.004 s) with identical transition guards, polynomial transfer curves, and 6-DOF vehicle kinematics.
-   - **Zero License Blocker Invariant**: 100% automated CI regression test harness (`tests/test_<feature_slug>_simulation.py`) executing offline without requiring MathWorks licenses.
+   - **Track B (Headless CI Digital Twin Engine)**: Standalone, license-free discrete-time execution engine (`crates/<feature_slug>/src/domain.rs` and `crates/<feature_slug>/src/engine.rs`) executing at the exact same discrete loop rate ($dt$, e.g. 250 Hz / 0.004 s) with identical transition guards, polynomial transfer curves, and 6-DOF vehicle kinematics.
+   - **Zero License Blocker Invariant**: 100% automated CI regression test harness (`crates/<feature_slug>/tests/<feature_slug>_simulation.rs`) executing offline without requiring MathWorks licenses.
    - **Mathematical & Discrete Equivalence Mandate**: Numerical tolerance verification ($\le 10^{-6}$) and formal simulation results report (`docs/reports/simulink_results/<FEATURE-ID>_simulation_results.md`).
 
 ### Step 1.5: Tech Stack Research (Optional)
@@ -76,6 +76,11 @@ If the feature involves unfamiliar frameworks, rapidly-evolving libraries, or ne
 ### Step 2: Checkout & Plan Review ("The Grill")
 1. Checkout a dedicated feature branch from the default branch resolved from configuration using the environment-configured checkout command and branch naming conventions (e.g. resolved dynamically from configuration):
 2. **Platform Scoping:** The feature spec is platform-independent (functional). Apply the target platform from the implementation profile (`.pipeline/profiles/<platform>.md`, loaded in Step 1) to translate the abstract UML-mapped functional specifications into concrete platform-specific design decisions. This is where framework-specific libraries, language choices, structural patterns, and test frameworks are chosen.
+   - **Deterministic Contract & Seed Codegen (`compile-sysml --emit-flutter-contracts`)**: For Flutter applications, synthesize native seeds and typed contracts prior to vertical slice implementation:
+     ```bash
+     ./target/release/compile-sysml --emit-flutter-contracts app_flutter
+     ```
+     This deterministically synthesizes `generated_domain_seed.g.dart` (5-table SQLite seed), `generated_schema_models.g.dart` (typed `InstanceRecord` views + `DEAP_SCHEMA_HASH`), `solver_bridge.g.dart` (Zero-Trust C-ABI `DeapByteBuffer` DTOs), and `schema_ui_contract_test.g.dart` (6-viewport `1920x1080` through `6K` contract suite).
 3. Create/update `implementation_plan.md` outlining a **complete vertical slice** conforming to the architectural layers defined in the target platform profile (e.g., database, serialization, API, logic, or UI presentation layers):
    - **Architectural Layers:** Map the UML classes, components, operations, and attributes to their corresponding layer locations in the target codebase stack.
    - **Layout Engine Alignment:** Ensure the plan specifies CSS Container Queries (`@container`), flexbox/grid layout models, resizable split containers, and high-density standards matching `.pipeline/constitution.md` and the platform profile.
@@ -115,10 +120,11 @@ The implementer receives ONLY (Prompt Payload Template):
 - The driving test specification
 - Mandatory Skill and Profile Read: Explicit prompt instruction requiring the subagent to execute view_file on both (1) the active SKILL.md file by explicit path (e.g., `skills/feature-driven-implementation/SKILL.md`) and (2) `.pipeline/profiles/<platform>.md` (e.g., `.pipeline/profiles/flutter.md`) as its very first steps.
 - Preamble Integrity Sentinel: Mandatory sentinel token line (e.g. `---GOVERNANCE-END---`) terminating the governance preamble block. The subagent MUST verify the sentinel token before executing and report BLOCKED if missing due to preamble truncation.
-- Mandatory Docstring & Traceability Requirement: Prompt instruction requiring that every generated class, interface, method, function, and public property MUST include full docstrings (DartDoc `///`, JSDoc `/** */`, Python `"""`), and attach UML traceability tags (`/// Realises: [SpecName/ClassName]`) to every public class header.
+- Mandatory Docstring & Traceability Requirement: Prompt instruction requiring that every generated class, interface, method, function, and public property MUST include full docstrings (DartDoc `///`, JSDoc `/** */`, Rust `///`), and attach UML traceability tags (`/// Realises: [SpecName/ClassName]`) to every public class header.
+- Mandatory AST PartDef Grounding & Failure Mode Traceability: Prompt instruction requiring that every generated domain entity, state machine, service, or interface MUST maintain architectural grounding in its underlying SysML `part def` component definition, attach UML & SysML traceability tags (`/// Realises: [SpecName/ClassName] | SysML v2: part def <NodeName>`), and implement defensive guards against the component failure modes cataloged in `docs/research/FAILURE_MODE_REGISTRY.md` across the 4 Universal Failure Dimensions (Interface, State, Action, Resource).
 - **Mandatory Governance Acknowledgment**: Before executing any code writes, the subagent MUST echo back a structured summary of the governance rules received, declaring that it has read and will honor:
   (a) `.pipeline/constitution.md` Section 1.9 Zero-Mocking Live Persistence Mandate
-  (b) The 3-layer LUI Definition of Done: DomainModel, ViewModel, LUI Widget Binding
+  (b) The 3-layer LUI Definition of Done (DomainModel, ViewModel, LUI Widget Binding) and continuous SysML `part def` architectural grounding with `docs/research/FAILURE_MODE_REGISTRY.md` failure mode mitigations
   (c) The target platform profile (`.pipeline/profiles/<platform>.md`)
   (d) TDD RED-GREEN-REFACTOR cycle mandate
   The coordinator MUST validate acknowledgment receipt before the subagent proceeds to code generation. If the acknowledgment does not arrive or omits any of the four items, the coordinator MUST re-dispatch the subagent with the full preamble and log a governance delivery failure.
@@ -187,6 +193,7 @@ After each micro-task's implementation, two reviews MUST occur **in this order**
 - **Coupling & Leakage Audit:** Verify that no direct database SDK dependencies (e.g. `@firebase/firestore` or `cloud_firestore`) leak into UI / presentation components. All components must interact exclusively with abstract repositories.
 - **Layout Engine Compliance:** Verify that split workspaces align with `logical-layout.json`, resizable splitter containers isolate reflows using CSS Container Queries to prevent unmounting state loss, and icons conform to the 16px SVG outline limits (stroke weight 1.0px–1.2px, cell padding 4px).
 - **Model Integrity Check:** Verify that every constructor, `copyWith`, and `valueWriter` in the diff includes or passes through new fields.
+- **AST PartDef Grounding & Failure Mode Mitigation:** Verify that the implemented code maintains continuous architectural grounding in its target SysML `part def` component and handles the failure modes cataloged in `docs/research/FAILURE_MODE_REGISTRY.md`.
 - **Governance Adherence Check:** Verify the subagent's governance acknowledgment is present and complete. If missing or incomplete, fail the review and require re-dispatch.
 - **If issues found:** Implementer fixes → re-review. Do NOT proceed to Stage 2 until Stage 1 passes.
 
@@ -236,7 +243,12 @@ If a test fails with an unexpected error during Step 3, follow the 4-phase debug
 ### Step 4: Verification & Testing
 1. **Assertion-Based Automation:** When writing or updating tests, do not rely on basic smoke tests. Add explicit assertions that query return values, object states, or output trees for the presence of the new fields or data properties. For any modified domain models, mandate regression assertions on existing tests for operations on modified domain models to verify field preservation through every constructor, `copyWith`, and `valueWriter` path.
 2. **Full Compilation Build:** Run local tests and run a full compilation build of the entire application (e.g. `flutter build` or `npm run build` as specified by the platform profile) to ensure it compiles without errors and is completely ready to run.
-3. **Parity Auditor Gate:** Mandate running PYTHONPATH=skills/spec-orchestrator/parity_auditor/src python3 -m parity_auditor.cli --workspace . --allow-missing-specs as a blocking gate before completing any implementation task.
+3. **Baseline Verification & Codebase AST Gates (Checks 38-41):**
+   Mandate running `./target/release/verify-baseline . --no-domain` (or `--spec-only` during specification phases) as a blocking gate before completing any implementation task. For Flutter applications, `verify-baseline` mechanically enforces:
+   - **Check 38 (Presentation Anti-Hardcoding AST Gate)**: Rejects un-interpolated domain instance strings, hardcoded telemetry literals, and static boolean row builder arguments in `app_flutter/lib/features/`.
+   - **Check 39 (Zero-Mocking Test AST & SQLite Disposal Gate)**: Rejects mock/fake classes and empty stubs in `test/`, and enforces proper `tearDownAll` SQLite disposal.
+   - **Check 40 (Interactive Gesture, 1080p-6K Viewport & Pairwise 2D HUD Non-Overlap Gate)**: Enforces `schema_ui_contract_test.g.dart` multi-resolution contract tests across all 6 viewports (`1920x1080` through `6016x3384`) and bans shallow test helpers.
+   - **Check 41 (Track B C-ABI Solver Bridge SSOT & 5-Table SQLite Seed Parity Gate)**: Enforces thin C-ABI delegation and bijective 5-table SQLite seed parity between schemas and `generated_domain_seed.g.dart`.
 4. **Evidence of Completion:** Paste actual raw test output / build output as proof. Do not summarize -- show the raw output.
 5. Provide **precise, step-by-step human manual testing instructions** in the verification section. The instructions must guide the user on exactly what commands, scripts, or interface interactions to execute, what inputs to feed, and what specific output (e.g., payload, log entry, UI state change, database record) to inspect to verify correctness.
 6. **Independent Subagent Validation Check (or Single-Agent Fallback Self-Audit):**
@@ -246,12 +258,12 @@ If a test fails with an unexpected error during Step 3, follow the 4-phase debug
 
 ### Step 5: Release & Closure (CRITICAL)
 1. Merge the feature branch into the configured default branch resolved from configuration rules using the configured merge command template.
-2. Create or update a cumulative solution walkthrough document under the configured design directory (e.g. `docs/designs/feat-<Issue_Number>-solution.md`) summarizing the changes, testing, and validations. This document must include a Code Realization Table that explicitly maps each feature and its attributes to the implemented source files, classes, methods, and functions matching the target platform's file extensions (e.g., `.tsx` for React, `.dart` for Flutter, `.cs` for C#, `.py` for Python). Do not delete or overwrite sections for previously implemented sub-features or related components. Ensure the document is a cumulative record of all changes.
+2. Create or update a cumulative solution walkthrough document under the configured design directory (e.g. `docs/designs/feat-<Issue_Number>-solution.md`) summarizing the changes, testing, and validations. This document must include a Code Realization Table that explicitly maps each feature and its attributes to the implemented source files, classes, methods, and functions matching the target platform's file extensions (e.g., `.tsx` for React, `.dart` for Flutter, `.cs` for C#, `.rs` for Rust). Do not delete or overwrite sections for previously implemented sub-features or related components. Ensure the document is a cumulative record of all changes.
    > [!IMPORTANT]
    > **DO NOT USE THE FEATURE INDEX NUMBER** in the solution filename if the tracker issue number is different. The solution filename MUST strictly use the tracker issue number (e.g., `feat-<Issue_Number>-solution.md`).
    >
    > **ZERO-TRUST COLLISION CHECK:** Before updating or creating this file, search the repository and history for the target filename to check its existing content. If it exists, read it first and append/merge the new changes rather than overwriting. If there is a filename mismatch or conflict, alert the user and resolve the naming conflict immediately.
-3. **Backlog Reconciliation**: Run the backlog reconciliation script to synchronize all checklists, updated spec bodies (such as fixed Mermaid diagrams), and issue states back to GitHub: python3 skills/spec-orchestrator/scripts/reconcile_backlog.py
+3. **Backlog Reconciliation**: Run the native backlog reconciler to synchronize all checklists, updated spec bodies (such as fixed Mermaid diagrams), and issue states back to GitHub: `./target/release/reconcile-backlog`
 4. Commit and push the solution document using the configured commit command template with neutral issue citations (e.g. `docs(designs): add solution walkthrough (refs #<id>)` or `(#<id>)`). Never use auto-closing keywords (`fix`, `fixes`, `close`, `closes`, `resolve`, `resolves` preceding `#<id>`).
 5. Mark the feature issue `Fixed / Resolved` on the active issue tracker provider: apply the `status:fixed-resolved` label and embed a comment pointing to the committed solution document, dynamically constructing the URL using `meta.upstream_repository` from configuration. Leave the issue open -- `Closed` requires Product Owner validation (`.pipeline/constitution.md:161`).
 6. Update the local parent Epic checklist:
@@ -269,6 +281,6 @@ If a test fails with an unexpected error during Step 3, follow the 4-phase debug
 If a tool command (linter or reconciler) fails during implementation:
 1. **Do not proceed** to the next step.
 2. **Log the exact error** (stderr, exit code).
-3. **Automated Upstream Reporting**: If the step fails and you suspect it is due to a bug in the pipeline tooling, you MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `python3 scripts/file_defect.py` (e.g. `python3 scripts/file_defect.py --repo gintatkinson/DEAP01-spec-core --title "Tooling Bug: [Command] failed" --body-file [payload_path] --label "bug"`).
+3. **Automated Upstream Reporting**: If the step fails and you suspect it is due to a bug in the pipeline tooling, you MUST dispatch a fresh context-isolated subagent with Role `Adversarial Code Auditor` adopting `skills/adversarial-code-auditor/SKILL.md` to produce a verified 7-section defect dossier with un-falsifiable empirical reproduction, and submit it via `./target/release/reconcile-backlog create-issue --label bug` (or `./target/release/file-defect`, e.g. `./target/release/reconcile-backlog create-issue --repo gintatkinson/DEAP01-spec-core --title "Tooling Bug: [Command] failed" --body-file [payload_path] --label "bug"`).
 4. Escalate to the user with the issue URL and error context.
 

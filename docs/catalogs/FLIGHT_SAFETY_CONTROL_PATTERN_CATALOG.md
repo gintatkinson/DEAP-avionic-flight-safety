@@ -686,9 +686,9 @@ stateDiagram-v2
 
 | Pattern ID | Pattern Name | Allocated Standards & Clauses | Realized Obligation Tags | Target Subsystem Allocation | Primary Verification Artifact |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `CP-01` | Triple Modular Redundant (TMR) Majority Voting | FAA AC 20-152A §4.2, SAE ARP4754A §5.4.2, RTCA DO-254 §5.5.1 | `OBL-DO254-02`, `OBL-ARP4754A-03` | Primary Flight Computer Voter | `tests/test_tmr_voting.py` |
-| `CP-02` | ASTM F3269-17 Run-Time Assurance (RTA) Dual-Channel Simplex | ASTM F3269-17 §5.1–§5.3, RTCA DO-178C §6.3.1, SAE ARP4761 §5.0 | `OBL-DO178C-02`, `OBL-ARP4761-03` | Safety Assurance Monitor | `tests/test_rta_simplex.py` |
-| `CP-03` | Cross-Channel Data Link (CCDL) Synchronization | RTCA DO-178C §6.3.2, RTCA DO-254 §5.5.1, SAE ARP4754A §5.6 | `OBL-DO178C-02`, `OBL-DO254-02` | Inter-Channel CCDL Bus | `tests/test_ccdl_sync.py` |
-| `CP-04` | Asymmetric Propulsion / Actuator Degradation Reconfiguration Law | SAE ARP4761 §4.4, MIL-STD-882E Task 205 §4.2, SAE ARP4754A §5.4.1 | `OBL-ARP4761-02`, `OBL-MIL882E-03` | Control Allocation Matrix | `tests/test_actuator_reconfig.py` |
-| `CP-05` | Boundary Geofence Active Containment & Failsafe Return-to-Home | JARUS SORA v2.5 Annex B §B.2, ASTM F3411-22a §6.3, FAA AC 20-152A §4.2 | `OBL-ARP4754A-03`, `OBL-MIL882E-04` | Autonomous Geofence Router | `tests/test_geofence_containment.py` |
-| `CP-06` | Flight Termination System (FTS) Dual-Consent Command Interlock | FAA 14 CFR §107.39, MIL-STD-882E Task 204 §4.1, RTCA DO-254 §5.5.1 | `OBL-MIL882E-02`, `OBL-DO254-03` | FTS Hardware Interlock Unit | `tests/test_fts_dual_consent.py` |
+| `CP-01` | Triple Modular Redundant (TMR) Majority Voting | FAA AC 20-152A §4.2, SAE ARP4754A §5.4.2, RTCA DO-254 §5.5.1 | `OBL-DO254-02`, `OBL-ARP4754A-03` | Primary Flight Computer Voter | `crates/flight-safety/tests/tmr_voting.rs` |
+| `CP-02` | ASTM F3269-17 Run-Time Assurance (RTA) Dual-Channel Simplex | ASTM F3269-17 §5.1–§5.3, RTCA DO-178C §6.3.1, SAE ARP4761 §5.0 | `OBL-DO178C-02`, `OBL-ARP4761-03` | Safety Assurance Monitor | `crates/flight-safety/tests/rta_simplex.rs` |
+| `CP-03` | Cross-Channel Data Link (CCDL) Synchronization | RTCA DO-178C §6.3.2, RTCA DO-254 §5.5.1, SAE ARP4754A §5.6 | `OBL-DO178C-02`, `OBL-DO254-02` | Inter-Channel CCDL Bus | `crates/flight-safety/tests/ccdl_sync.rs` |
+| `CP-04` | Asymmetric Propulsion / Actuator Degradation Reconfiguration Law | SAE ARP4761 §4.4, MIL-STD-882E Task 205 §4.2, SAE ARP4754A §5.4.1 | `OBL-ARP4761-02`, `OBL-MIL882E-03` | Control Allocation Matrix | `crates/flight-safety/tests/actuator_reconfig.rs` |
+| `CP-05` | Boundary Geofence Active Containment & Failsafe Return-to-Home | JARUS SORA v2.5 Annex B §B.2, ASTM F3411-22a §6.3, FAA AC 20-152A §4.2 | `OBL-ARP4754A-03`, `OBL-MIL882E-04` | Autonomous Geofence Router | `crates/flight-safety/tests/geofence_containment.rs` |
+| `CP-06` | Flight Termination System (FTS) Dual-Consent Command Interlock | FAA 14 CFR §107.39, MIL-STD-882E Task 204 §4.1, RTCA DO-254 §5.5.1 | `OBL-MIL882E-02`, `OBL-DO254-03` | FTS Hardware Interlock Unit | `crates/flight-safety/tests/fts_dual_consent.rs` |
