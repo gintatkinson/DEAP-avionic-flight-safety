@@ -1,0 +1,45 @@
+# DEAP-03 Downstream Consumer Two-Lane Verification Pipeline
+# Upstream Baseline: gintatkinson/deap03@e75d23d412fa88f5ecc9683c0615c3303d43bf00 (stage-10-complete)
+
+stages:
+  - deap-verify
+
+variables:
+  DEAP_TRUSTED_VK: "606a0547d9928339c7c8f8dc7cd075969390fa8fb3497b3702013b9074d6d54b"
+
+deap-perimeter:macos-arm64:
+  stage: deap-verify
+  tags: [macos, aarch64]
+  script:
+    - ./.deap/bin/verify-baseline perimeter
+        --workspace .
+        --perimeter-role downstream-consumer
+        --schema-scope lib-only
+        --verify-key "$DEAP_TRUSTED_VK"
+    - ./.deap/bin/verify-baseline verify-manifest
+        --workspace .
+        --manifest .deap/update-manifest.json
+        --bundle-dir .deap/bin
+        --verify-key "$DEAP_TRUSTED_VK"
+
+deap-airlock:linux:
+  stage: deap-verify
+  image: debian:bookworm-slim
+  script:
+    - test ! -d crates/deap-ir && test ! -d blueprints && test ! -d .pipeline
+    - test -f criticalup.toml && test -f schema/lib/ISQ.sysml && test -f schema/lib/RAAML.sysml
+    - printf '%s\n'
+        "1243abcb151f276806ea96b01e77b671e3eed03b4c8e1653fa5bd5baee8b3619  .deap/update-manifest.json"
+        "95dcc3811aaef022c8830414453bf2fcb08a6438134efc70177dd7d4f634ab2d  .deap/bin/assemble-conops"
+        "67d66d74e6ccc2aa1500cb8de2c5ae93acc75981e7b18b4665bbf8c3b5f34ccf  .deap/bin/compile-sysml"
+        "547423a6ce5519c27c05a0bbdda8c7f3cd50c41550c85cbedcf37bde872dccd4  .deap/bin/ingest-sysml"
+        "c8dc68869c86806be3929c731add49bd47ced182349f9ab91b2c7653c7dda0a1  .deap/bin/reconcile-backlog"
+        "e93cbd9fc426243b4a0fe2e975012f8b43199d5d6027bd3fc6cfda18679743ab  .deap/bin/verify-baseline"
+        | sha256sum -c -
+    - if [ -x ./.deap/bin/x86_64-unknown-linux-gnu/verify-baseline ]; then
+        ./.deap/bin/x86_64-unknown-linux-gnu/verify-baseline perimeter
+          --workspace .
+          --perimeter-role downstream-consumer
+          --schema-scope lib-only
+          --verify-key "$DEAP_TRUSTED_VK";
+      fi

@@ -1,652 +1,210 @@
-# Digital Engineering Agent Platform (DEAP) — Avionic Flight Safety Parent Template -- Downstream Cyber-Physical Infrastructure Safety Project
+# DEAP-avionic-flight-safety -- Avionic Flight Safety Parent Template
 
-> **Repository Role:** `DOMAIN_DISTRIBUTION_TEMPLATE`  
-> **Primary Technology Profiles:** `ROS2 C++ Real-Time` | `Target Embedded Platform Execution Profile`  
-> **Target Regulatory Frameworks:** `JARUS SORA v2.5 (SAIL I–VI)` | `ASTM F3269-17 RTA` | `ASTM F3411-22a Remote ID` | `RTCA DO-365B DAA`  
+> **Repository Role:** `DOMAIN_DISTRIBUTION_TEMPLATE` (`--perimeter-role downstream-consumer`)
+> **Upstream Toolchain Baseline:** `gintatkinson/deap03@e75d23d412fa88f5ecc9683c0615c3303d43bf00` (`stage-10-complete`, Ferrocene `stable-26.08.0`)
+> **Primary Technology Profiles:** `MATLAB / Simulink / Stateflow / Embedded Coder` | `ROS2 C++ Real-Time` | `Target Embedded Platform Execution Profile`
+> **Target Regulatory Frameworks:** `DO-178C / DO-331` | `ARP4754B / ARP4761A` | `JARUS SORA v2.5 (SAIL I-VI)` | `ASTM F3269-17 RTA` | `RTCA DO-365B DAA`
 
 ---
 
 ## 1. System Overview
 
-This repository is an installed downstream implementation workspace governed by the **Digital Engineering Agent Platform (DEAP)** for cyber-physical infrastructure safety, real-time control, run-time assurance (RTA), and autonomous operations.
+This repository is the **Avionic Flight Safety Parent Template** governed by the **Digital Engineering Agent Platform (`deap03`)** for airborne flight control assurance, run-time assurance (RTA) simplex architectures, envelope protection, and DO-178C / DO-331 model-based design.
 
-### 1.1 Clean Landing Zone Invariant
+### 1.1 Clean Landing Zone, Preserved Domain Corpus & Zero-Source Perimeter Invariant
 
-As a **Tier 2 Domain Distribution Template**, this repository maintains pristine, clean landing zones in `schema/`, `docs/epics/`, `docs/features/`, `docs/user-stories/`, and `docs/use-cases/` with only `.gitkeep` files (or domain-wide baseline SysML v2 schemas). Concrete customer project specifications, flight code, ROS2 nodes, and proprietary implementation artifacts belong exclusively in downstream customer application workspaces and must NOT be committed here.
+As a **Downstream Domain Distribution Template** (`--perimeter-role downstream-consumer`), this repository enforces strict zero-source isolation (`N_up_src == 0`, zero upstream `crates/deap-*` sources, zero upstream `blueprints/*.md`, and zero symbolic links):
+
+- Foundation SysML v2 / ISO 80000 ISQ and OMG RAAML v1.0 libraries reside strictly in `schema/lib/ISQ.sysml` and `schema/lib/RAAML.sysml` (`--schema-scope lib-only`).
+- Authoritative avionic flight safety domain catalogs and scoping documents are preserved under `docs/`:
+  - `docs/catalogs/FLIGHT_SAFETY_CONTROL_PATTERN_CATALOG.md`
+  - `docs/catalogs/STANDARDS_OBLIGATION_CATALOG.md`
+  - `docs/domain/DOMAIN_SCOPE.md`
+  - `docs/domain/SYNTHESIS_RESIDUALS.md`
+  - `docs/research/RESEARCH_INVENTORY.md`
+  - `docs/OPERATOR_PROMPT_CATALOG.md`
+- Specification landing zones (`docs/conops/`, `docs/epics/`, `docs/features/`, `docs/interfaces/`, `docs/management/`, `docs/safety/`, `docs/use-cases/`, `docs/user-stories/`) remain clean landing zones with `.gitkeep`.
+- Concrete customer aircraft/UAS schemas (`schema/*.sysml`), generated flight contracts, Simulink `.slx` models, and flight software belong exclusively in downstream customer application workspaces cloned from this template.
 
 ### 1.2 Primary Commercial Toolchain Integration Context
 
-This platform explicitly declares **MATLAB / Simulink / Stateflow / Embedded Coder** as the Primary Tier-1 Commercial Toolchain Integration Context (Model-Based Design, Control Law Synthesis, DO-178C C/SPARK Ada code generation).
+This platform explicitly declares **MATLAB / Simulink / Stateflow / Embedded Coder** as the Primary Tier-1 Commercial Toolchain Integration Context (Model-Based Design, Control Law Synthesis, DO-178C C / SPARK Ada code generation), governed by [CLAUDE.md](./CLAUDE.md) and [NON_RUST_MULTI_TOOLCHAIN_PROFILES.md](./downstream-profiles/profile-non-rust-targets/NON_RUST_MULTI_TOOLCHAIN_PROFILES.md).
 
 ---
 
-## 2. Pipeline Structure & Governance
+## 2. Workspace Structure, Foundation Libraries & Downstream Profiles
 
-- `.agents/` & `AGENTS.md`: Agent behavior rules, role boundaries, and subagent dispatch protocols.
-- `CLAUDE.md`: Claude Code guidelines and verification gates.
-- `.pipeline/`: Constitution (`constitution.md`), active governance rules bundle (`ACTIVE_RULES_BUNDLE.md`), domain specifications, and execution profiles (`profiles/ros2_cpp.md`, `profiles/px4_module.md`).
-- `rules/` & `skills/`: Platform engineering rules and agent workflow skills.
-- `schema/`: Contract definitions and SysML v2 schemas.
-- `target/release/`: Precompiled native Rust compiler, baseline verification, ConOps assembly, and backlog reconciliation binaries distributed with cryptographic SHA-256 provenance in `.pipeline/toolchain-manifest.json`.
-- Semantic acceptance verification: Automated baseline verification and safety compliance checks via pipeline binaries.
-
----
-
-## High-Performance Native Rust Toolchain
-
-The repository includes precompiled, high-performance native Rust binaries (`./target/release/`) with cryptographic SHA-256 provenance tracked in `.pipeline/toolchain-manifest.json`, delivering sub-second execution across all core digital engineering compiler gates:
-
-| Binary / Target | Role & Architectural Responsibilities |
-| :--- | :--- |
-| `./target/release/ingest-sysml` | **Ground 0.0 Ingestion Engine**: High-throughput parsing and normalization of unstructured OEM documentation, PDF manuals, BOM markdown tables, and Level 1C ICD registers into canonical SysML v2 textual models. |
-| `./target/release/compile-sysml` | **SysML v2 / KerML Compiler & STPA Transpiler**: Deterministic SysML v2 compilation, semantic validation, bidirectional AST synchronization (`--reverse-sync`, `--forward-sync`), and formal STPA / FMECA constraint transpilation. |
-| `./target/release/assemble-conops` | **ConOps & Mission Intent Assembly Engine**: High-throughput deterministic assembly of modular ConOps and Mission Intent units into canonical master specifications with parameter binding and TOC generation. |
-| `./target/release/reconcile-backlog` | **Backlog Reconciliation Engine**: High-performance bidirectional synchronization of local Markdown specifications, frontmatter metadata, and issue tracker checklists. |
-| `./target/release/verify-baseline` | **Checks 10-40 Quality Gate Verifier**: Ultra-fast baseline conformance, KaTeX math parsing, Mermaid diagram validation, and semantic diagram-to-AST parity auditor. |
+- `.deap/bin/`: Five precompiled, `Ed25519`-attested Ferrocene `stable-26.08.0` native binaries (`ingest-sysml`, `assemble-conops`, `compile-sysml`, `reconcile-backlog`, `verify-baseline`).
+- `.deap/update-manifest.json`: Signed `0x60` RFC 8785 JCS release manifest (SHA-256 `1243abcb151f276806ea96b01e77b671e3eed03b4c8e1653fa5bd5baee8b3619`) verified under Tier-2 public key `VK_REL = 606a0547d9928339c7c8f8dc7cd075969390fa8fb3497b3702013b9074d6d54b`.
+- `criticalup.toml`: Pinned Ferrocene `stable-26.08.0` qualified Rust toolchain manifest.
+- `schema/lib/`: Normative foundation libraries (`ISQ.sysml`, `RAAML.sysml`) validated by `verify-baseline perimeter --schema-scope lib-only`.
+- `downstream-profiles/`: Self-contained Downstream Profile Export Bundle:
+  - [downstream-profiles/README.md](./downstream-profiles/README.md) & [DOWNSTREAM_INSTALLATION_AND_CI_GUIDE.md](./downstream-profiles/DOWNSTREAM_INSTALLATION_AND_CI_GUIDE.md)
+  - `profile-non-rust-targets/`: MATLAB/Simulink/Stateflow/Embedded Coder, ANSYS SCADE KCG & ARINC 661, SPARK 2014, MISRA C/C++, SAE AS5506D AADL, and OpenModelica FMI 2.0/3.0 profiles
+  - `profile-dart-flutter-hmi/`: Ring-3 Dart/Flutter coding standard, safety-critical real-time UI blueprint, Dart-Rust FFI synthesis profile, and C11 `include/deap_ffi.h`
+  - `profile-target-app-runtime/`: Dynamic runtime metadata engine and zero-ephemeral SQLite persistence blueprints
+- `.gitlab-ci.yml`: Two-lane downstream CI pipeline (`deap-perimeter:macos-arm64` and `deap-airlock:linux`).
+- `AGENTS.md` & `CLAUDE.md`: Project-scoped agent governance rules, Simulink Tier-1 declaration, and verification gates.
+- `docs/`: Avionic flight safety catalogs (`docs/catalogs/`), domain scoping (`docs/domain/`), research inventory (`docs/research/`), `docs/OPERATOR_PROMPT_CATALOG.md`, and clean specification landing zones.
 
 ---
 
-## 3. Customer Project Onboarding & Agent Initialization Sequence
+## 3. Signed `deap03` `B_5` Native Toolchain (`stage-10-complete`)
 
-### 3.1 Downstream Baseline Verification & Ingestion Workflows (Quick Start)
+The repository ships the five-binary `B_5` release tuple built from `gintatkinson/deap03@e75d23d412fa88f5ecc9683c0615c3303d43bf00` under strict generator/verifier module disjointness:
 
-To verify that all repository issue tracker labels, baseline contracts, and safety specifications pass downstream conformance gates, run:
+| Binary Path | Assurance Qualification | Architectural Role & Subcommands | `aarch64-apple-darwin` SHA-256 |
+| :--- | :--- | :--- | :--- |
+| `./.deap/bin/ingest-sysml` | `DO-330 TQL-1` | Deterministic SysML v2 / Markdown / legacy DEAP01 frontend and canonical `.deap/ir.snapshot.bin` sealer (`check`, `seal`, `slice`, `migrate-legacy`). | `547423a6ce5519c27c05a0bbdda8c7f3cd50c41550c85cbedcf37bde872dccd4` |
+| `./.deap/bin/assemble-conops` | `DO-330 TQL-1` | Pre-STPA ConOps and METL operational slice assembler synthesizing `CONOPS.md`, `MISSION_INTENT.md`, and `.deap/conops.receipt.json` (`check`, `project`, `slice`). | `95dcc3811aaef022c8830414453bf2fcb08a6438134efc70177dd7d4f634ab2d` |
+| `./.deap/bin/compile-sysml` | `DO-330 TQL-1` / `ISO 26262 TCL3` | 5-pass safety compiler, ZBDD minimal cut-set analyzer, `#![no_std]` contract synthesizer, and Tier-A Rust docstring injector (`check`, `build`, `supersede-seed`, `inject-docstrings`). | `67d66d74e6ccc2aa1500cb8de2c5ae93acc75981e7b18b4665bbf8c3b5f34ccf` |
+| `./.deap/bin/reconcile-backlog` | `DO-330 TQL-1` | Stage P4/P5/M3.5 Agile/WBS Markdown projector and 3-way Merkle tracker reconciler (`project`, `sync`, `tracker`, `slice`, `migrate-defects`). | `c8dc68869c86806be3929c731add49bd47ced182349f9ab91b2c7653c7dda0a1` |
+| `./.deap/bin/verify-baseline` | `DO-330 TQL-5` | Disjoint independent baseline oracle, `0x60` `UpdateManifest` verifier, atomic `B_5` bundle installer, and downstream perimeter gate (`audit`, `hygiene`, `attest`, `verify-manifest`, `install-bundle`, `perimeter`, `setup-hooks`). | `e93cbd9fc426243b4a0fe2e975012f8b43199d5d6027bd3fc6cfda18679743ab` |
 
-```bash
-# Run baseline conformance verification (native Rust binary)
-./target/release/verify-baseline . --no-domain
+---
+
+## 4. Downstream Verification, Bundle Upgrade & Pipeline Workflows
+
+### 4.1 Mandatory Local Verification Gates (Quick Start)
+
+Verify the detached `Ed25519` release manifest signature, all five `B_5` binary digests, zero-source perimeter isolation (`N_up_src == 0`), zero symlinks, pure 7-bit LF ASCII, and `ISQ`/`RAAML` foundation lowering:
+
+```sh
+# 1. Verify signed 0x60 UpdateManifest and all 5 B_5 binaries
+./.deap/bin/verify-baseline verify-manifest \
+  --workspace . \
+  --manifest .deap/update-manifest.json \
+  --bundle-dir .deap/bin \
+  --verify-key 606a0547d9928339c7c8f8dc7cd075969390fa8fb3497b3702013b9074d6d54b
+
+# 2. Run snapshot-free downstream perimeter, ASCII, and ISQ/RAAML gate
+./.deap/bin/verify-baseline perimeter \
+  --workspace . \
+  --perimeter-role downstream-consumer \
+  --schema-scope lib-only \
+  --manifest .deap/update-manifest.json \
+  --bundle-dir .deap/bin \
+  --verify-key 606a0547d9928339c7c8f8dc7cd075969390fa8fb3497b3702013b9074d6d54b
 ```
 
-To configure Git hooks and verify local pipeline tooling and governance rules in-place at any time, run:
+### 4.2 Atomic `B_5` Bundle Upgrade & Deterministic Git Hooks
 
-```bash
-# Configure git hooks and verify local pipeline tooling in-place
-./target/release/verify-baseline setup-hooks . && ./target/release/verify-baseline . --no-domain
+```sh
+# Install deterministic 0o755 POSIX pre-commit and pre-push Git hooks
+./.deap/bin/verify-baseline setup-hooks --workspace .
+
+# Atomically stage and activate an upgraded signed B_5 bundle with .prev rollback safety
+./.deap/bin/verify-baseline install-bundle \
+  --workspace . \
+  --perimeter-role downstream-consumer \
+  --bundle-dir /path/to/stage10-release-bundle/aarch64-apple-darwin \
+  --manifest /path/to/stage10-release-bundle/update-manifest.json \
+  --verify-key 606a0547d9928339c7c8f8dc7cd075969390fa8fb3497b3702013b9074d6d54b \
+  --install-dir .deap/bin
 ```
 
-### 3.2 Mandatory Agent Initialization Sequence
-
-Immediately following installation, any AI agent (Antigravity, Claude Code, Cursor) initializing in this repository MUST execute the following sequence before accepting user directives or executing task implementations:
-
-0. **Detect Repository Role & Scope (Direct-Path Read)**: Inspect whether `.pipeline/upstream/` exists on disk via direct-path read (`list_dir` or `view_file`). Do not rely on glob or search tools that ignore hidden dot-directories.
-   - If absent and repository name starts with `DEAP-` -> **Domain Distribution Template Mode**: Clean landing zones must be maintained.
-1. **Read Governance Constitution**: Execute `view_file` on `.pipeline/constitution.md` to ingest the platform-independent functional governance layer and zero-mocking persistence mandates.
-2. **Load Project Skills**: Execute `view_file` on `skills/feature-driven-implementation/SKILL.md` (and any active skills under `skills/` or `.agents/skills/`) to initialize feature-driven implementation protocols and review gates.
-3. **Load Governance Rules**: Execute `view_file` on `.pipeline/ACTIVE_RULES_BUNDLE.md` to ingest the complete, consolidated suite of active governance rules in a single read (covering dual-track MBD, SysML SSOT completeness, role boundary locks, and TDD mandates).
-4. **Load Platform Profile**: Read the target platform execution profile (`.pipeline/profiles/flutter.md`, `.pipeline/profiles/react.md`, `.pipeline/profiles/ros2_cpp.md`, or `.pipeline/profiles/px4_module.md`) to establish platform-specific build, test, and lifecycle constraints.
-5. **Bootstrap Tracker Labels & Verify Baseline**: Verify that repository issue tracker labels and baseline conformance pass by running `./target/release/verify-baseline . --no-domain`.
-
----
-
-## 4. Multi-Pipeline Operator Prompt Catalog & Autonomous Execution Workflows
-
-This catalog contains the complete, unabridged operator prompt suite for executing all stages of the Digital Engineering Agent Platform (DEAP) lifecycle across context-isolated subagents in Antigravity, Claude Code, and Cursor.
-
-### 4.1 Master-Worker Subagent Topology
+### 4.3 End-to-End 5-Stage `deap03` Specification & Synthesis Pipeline
 
 ```mermaid
 flowchart TD
-    subgraph P0["Pipeline 0: Pre-Spec Safety Engineering & Model Formulation"]
-        Step00["Step 0.0: Level 0 OEM Ground Truth Ingestion (ingest-sysml)"] --> Step0["Step 0: SysML Model Ingestion & Compilation Gate (compile-sysml --compile)"]
-        Step0 -->|"Compiled AST"| W0A["Worker 0A: CONOPS Synthesizer (assemble-conops)"]
-        W0A -->|"docs/conops/CONOPS.md"| W0B["Worker 0B: STPA / FMECA Assurer"]
-        W0B -->|"docs/safety/STPA_MATRIX.md"| W0C["Worker 0C: SysML Model Author"]
-        W0C -->|"schema/DEAP_MODEL.sysml"| W0D["Worker 0D: Interface Specification Worker (Logical ICD & Master Signal Dictionary)"]
+    subgraph Stage1["Stage 1: Schema Ingestion and Snapshot Sealing"]
+        SchemaDir["schema/lib/{ISQ,RAAML}.sysml + schema/*.sysml"] --> Ingest["ingest-sysml seal"]
+        Ingest --> Snapshot[".deap/ir.snapshot.bin"]
     end
 
-    subgraph P1["Pipeline 1: Agile Specification Backlog Projection"]
-        W0D -->|"pipeline0_handoff_contract.json"| W1A["Worker 1A: Structural Spec Worker (Epics & Features)"]
-        W1A -->|"docs/epics/ & docs/features/"| W1B["Worker 1B: Behavioral Spec Worker (User Stories & Statecharts)"]
-        W1B -->|"docs/user-stories/"| W1C["Worker 1C: Operational Spec Worker (Use Cases & Realization)"]
-        W1C -->|"docs/use-cases/"| W1D["Worker 1D: WBS & Work Package Decomposition Spec Worker"]
-        W1D -->|"docs/management/WBS_DELIVERABLES_SUITE.md"| Reconcile["Grounding Auditor & Backlog Reconciliation Gate"]
+    subgraph Stage2["Stage 2: Pre-STPA ConOps and METL Projection"]
+        Snapshot --> Conops["assemble-conops project"]
+        Conops --> ConopsDocs["docs/conops/{CONOPS,MISSION_INTENT}.md + .deap/conops.receipt.json"]
     end
 
-    subgraph P2["Pipeline 2: Autonomous Feature Implementation & Simulation"]
-        Reconcile --> Backlog["Prioritized Backlog Feature"]
-        Backlog --> W2A1["Worker 2A.1: Flutter Feature Implementer (app_flutter/)"]
-        Backlog --> W2A2["Worker 2A.2: ROS2 / PX4 Real-Time Control Implementer"]
-        Backlog --> W2B["Worker 2B: Dual-Track Simulation Driver (Simulink & Digital Twin)"]
-        W2A1 & W2A2 & W2B --> Rev1["Stage 1: Spec Compliance Review (Reviewer 1)"]
-        Rev1 --> Rev2["Stage 2: Code Quality & Numerical Review (Reviewer 2)"]
-        Rev2 --> Chall["Adversarial Challenge Gate (Challengers 1 & 2)"]
-        Chall --> Victory["Independent Victory Auditor (Victory Auditor)"]
-        Victory -->|"VICTORY CONFIRMED"| Release["Backlog Reconciliation & Status Transition"]
+    subgraph Stage3["Stage 3: 5-Pass Safety Compilation and Contract Synthesis"]
+        ConopsDocs --> Compile["compile-sysml build"]
+        Compile --> SafetyOut["STPA/FMECA Docs + #![no_std] Contracts + Kani Harnesses"]
+    end
+
+    subgraph Stage4["Stage 4: Agile/WBS Projection and 3-Way Merkle Sync"]
+        SafetyOut --> Reconcile["reconcile-backlog project / sync"]
+        Reconcile --> BacklogOut["docs/{epics,features,user-stories,use-cases,management}/"]
+    end
+
+    subgraph Stage5["Stage 5: Disjoint TQL-5 Independent Baseline Audit"]
+        BacklogOut --> Audit["verify-baseline audit / perimeter"]
     end
 ```
 
-### 4.2 Pipeline 0 Execution Prompts
-
-Execute the following prompts in sequence using context-isolated subagents to transform unstructured intent, operational scenarios, and interface schemas into formal CONOPS, STPA hazard matrices, and SysML v2 AST models:
-
-#### 4.2.0 Worker 00: OEM Prose / BOM Ingestion & Model Synthesis Prompt (Step 0.0)
-
-**Step 0.0 Entrypoint for Unstructured / Prose Customer Documentation:**
-For customer projects starting with unstructured OEM prose manuals, PDF documentation, markdown tables, or Bill of Materials (BOM) specifications, Worker 00 provides the sanctioned, deterministic entrypoint. Extracting OEM Bill of Materials (BOM) and physical parameters into `schema/extracted/` and synthesizing canonical SysML v2 textual models in `schema/model.sysml` (or `.pipeline/schema.sysml`) is fully authorized under Check 23 (Factual Grounding & Numeric Provenance Gate) and serves as the mandatory precursor to executing the Step 0 compilation gate (`./target/release/compile-sysml --compile`).
-
-```text
-Execute `view_file` on `skills/spec-orchestrator/SKILL.md` as your very first step before taking any action.
-
-Repository Classification: UPSTREAM_SPEC_CORE_COMPILER (or DOWNSTREAM_CUSTOMER_PROJECT depending on execution context)
-
-Role: Worker 00 -- OEM Prose / BOM Ingestion & Model Synthesizer (Step 0.0)
-
-Primary Commercial Toolchain Integration Context:
-This project explicitly declares MATLAB / Simulink / Stateflow / Embedded Coder as the Primary Tier-1 Commercial Toolchain Integration Context (Model-Based Design, Control Law Synthesis, DO-178C C/SPARK Ada code generation).
-
-Directive:
-Execute Level 0 OEM Ground Truth Ingestion and initial SysML v2 textual model synthesis for customer projects starting from unstructured OEM prose manuals, PDF documentation, markdown tables, or Bill of Materials (BOM) specifications:
-
-1. Unstructured & Semi-Structured Ingestion Scope:
-   - Ingest raw OEM technical documentation, flight/operating manuals, ICD tables, and BOM markdown tables located in `schema/` and `schema/extracted/`.
-   - Authorized Under Check 23: Extract physical parameters, component hierarchies, mass/power budgets, port/pin interfaces, and operational envelopes into machine-readable Markdown tables in `schema/extracted/` (e.g., `schema/extracted/oem_bom.md`, `schema/extracted/interface_table.md`, `schema/extracted/parametric_limits.md`).
-
-2. Canonical SysML v2 Model Synthesis:
-   - Execute the Level 0 ingestion translator:
-     ./target/release/ingest-sysml --schema "schema/extracted/" --format markdown --out "schema/model.sysml"
-   - Alternatively, synthesize a formal SysML v2 textual model `schema/model.sysml` directly, defining:
-     * Root `package` matching the target cyber-physical system.
-     * All component definitions as canonical `part def` elements with typed attributes (mass, power, dimensions, channel count, part numbers).
-     * Directional communication and electrical interface boundaries as `port def` elements (`in`, `out`, `inout`).
-     * Physical, environmental, and operational constraints as `constraint def` / `assert constraint` blocks.
-     * State machine structures and operational lifecycle phases as `state def` elements.
-
-3. Compilation Gate Precursor Verification:
-   - Verify that the generated `schema/model.sysml` passes the Step 0 SysML Compilation Gate:
-     ./target/release/compile-sysml --compile
-   - Ensure `.pipeline/schema.sysml` and `.pipeline/schema-digest.json` are successfully generated without compilation errors.
-   - Verify Check 23 compliance (Factual Grounding & Numeric Provenance Gate): all physical parameters and component counts in `schema/model.sysml` strictly match the Level 0 OEM ground truth in `schema/extracted/`.
-
-Defect Filing Directive:
-If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `./target/release/reconcile-backlog create-issue --label bug` (or `./target/release/verify-baseline check-defect`). Issue auto-closing keywords or issue close commands are strictly forbidden.
-
-PROCEED
-```
-
-#### 4.2.1 Worker 0A: CONOPS & Operational Scenario Synthesis Prompt
-
-```text
-Execute `view_file` on `skills/spec-conops-engineering/SKILL.md` as your very first step before taking any action.
-
-Repository Classification: UPSTREAM_SPEC_CORE_COMPILER (or DOWNSTREAM_CUSTOMER_PROJECT depending on execution context)
-
-Role: Worker 0A -- CONOPS & Operational Scenario Synthesizer
-
-Primary Commercial Toolchain Integration Context:
-This project explicitly declares MATLAB / Simulink / Stateflow / Embedded Coder as the Primary Tier-1 Commercial Toolchain Integration Context (Model-Based Design, Control Law Synthesis, DO-178C C/SPARK Ada code generation).
-
-Directive:
-Execute front-end modular CONOPS and Tactical Mission Intent synthesis for the target cyber-physical system using Universal Multi-Document & Schema Ingestion:
-
-1. Ingestion & Pre-Flight Analysis:
-   - Ingest Normative Research Baselines: Ingest `docs/research/RESEARCH_INVENTORY.md` and `docs/research/FAILURE_MODE_REGISTRY.md` to map allocated obligations (`OBL-*`) and component failure modes.
-   - Interface & Model Schema Ingestion: Ingest canonical SysML v2 AST model (`.pipeline/schema.sysml`), `schema/`, and `.pipeline/schema-digest.json`. Enforce 100% representation of declared `part def` nodes in Section 4 physical architecture. Scan `schema/` for pre-existing customer models and interface definitions (`*.sysml`, `*.proto`, `*.arxml`, `*.json`, `*.yaml`, `*.idl`).
-   - Architectural Blueprint Ingestion: Scan `docs/architecture/` (and `docs/architecture/blueprints/`) for existing architectural specifications, network blueprints, and safety frameworks (`*.md`). Reconcile customer interface schemas and architectural blueprints with system boundaries and MATLAB / Simulink / Stateflow control law synthesis hooks.
-   - Operational Intent Discovery: Ingest mission directives, operational purpose statements, and domain operational boundaries.
-
-2. Ingestion & Analysis Scope:
-   - Schema-derived operational envelope (physical boundaries, operating dynamics, environmental constraints, payload/actuator configurations).
-   - Domain-specific operational lifecycle phases: Initialization, Normal Operation, Degraded/Contingency Modes, and Safe Shutdown/Transition.
-   - Dynamic stakeholder roles derived from the system operational context (e.g., System Operators, Dispatchers/Supervisors, Field Maintenance Technicians, External Management/Telemetry Interfaces).
-   - Domain-specific regulatory and safety classification relevant to the operational envelope.
-
-3. Modular Deliverable Generation:
-   - Do NOT draft monolithic files directly. Author modular units conforming to JSON Schema contracts under:
-     * `docs/conops/units/conops/`: 12 canonical units (`01_METADATA_AND_OVERVIEW.md` through `12_EMERGENCY_DECISION_MATRIX.md`), including decoupled 3-tier architecture in `04_SYSTEM_ARCHITECTURE.md`.
-     * `docs/conops/units/mission_intent/`: 10 canonical units (`01_COMMANDERS_INTENT.md` through `10_OPERATIONAL_ALLOCATION_TAGS.md`), including operational `06_ROE_SAFETY_INTERLOCKS.md` and tactical `08_GO_NO_GO_MATRIX.md`.
-   - Ensure clear operational phase boundaries, system physical and functional boundaries, and environmental envelope constraints.
-   - Include MATLAB / Simulink / Stateflow model integration baseline hooks for downstream control law synthesis.
-   - Relative Link Mandate: Intra-document and schema links must use valid file-relative paths (`../../schema/...`, `../<dir>/...`).
-   - KaTeX / LaTeX Math Formatting Mandate: All multi-line aligned equations MUST be enclosed in `\begin{aligned} ... \end{aligned}` within `$$` delimiters on dedicated lines. Bare alignment tabs `&` outside an alignment environment (`aligned`, `matrix`, `cases`) and `\begin{align*}` environments are strictly forbidden. Markdown Table Math Prohibition Rule: Strictly ban `$ ... $` and `$$ ... $$` LaTeX math delimiters inside table headers, rows, and cells; plain text and Unicode (e.g. `Initial S`, `ΔV`, `λ`, `°C`, `≥`, `≤`, `→`, `10⁻⁶`) must be used instead, with 1:1 column count match between header and delimiter rows.
-
-4. Assembly & Verification Gates:
-   - Execute deterministic assembly: `./target/release/assemble-conops --input-dir docs/conops/units/ --output-dir docs/conops/ --verify`.
-   - Compile master specification documents: `./target/release/assemble-conops --input-dir docs/conops/units/ --output-dir docs/conops/`.
-   - Gate 26 Validation: Execute `./target/release/verify-baseline . --no-domain`.
-
-Defect Filing Directive:
-If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `./target/release/reconcile-backlog create-issue --label bug` (or `./target/release/verify-baseline check-defect`). Issue auto-closing keywords or issue close commands are strictly forbidden.
-
-PROCEED
-```
-
-#### 4.2.2 Worker 0B: STPA Hazard Analysis, FMECA & Domain Safety Assurer Prompt
-
-```text
-Execute `view_file` on `skills/spec-orchestrator/SKILL.md` as your very first step before taking any action.
-
-Repository Classification: UPSTREAM_SPEC_CORE_COMPILER (or DOWNSTREAM_CUSTOMER_PROJECT depending on execution context)
-
-Role: Worker 0B -- STPA Hazard Analysis, FMECA & Domain Safety Assurer
-
-Primary Commercial Toolchain Integration Context:
-This project explicitly declares MATLAB / Simulink / Stateflow / Embedded Coder as the Primary Tier-1 Commercial Toolchain Integration Context (Model-Based Design, Control Law Synthesis, DO-178C C/SPARK Ada code generation).
-
-Directive:
-Perform STPA hazard analysis, FMECA failure mode criticality evaluation, and domain safety risk assessment based on `docs/conops/CONOPS.md`.
-
-1. Standards Compliance & Domain Safety Framework:
-   - Dynamic Domain Safety Framework Selection: Apply the applicable safety framework governing the target domain (e.g., ISO 14971/IEC 62304 for Medical, EN 50128 for Rail, DNV-GL for Marine, ECSS for Space, ISO 3691-4 for Industrial AGV, SORA/DO-178C for Aviation).
-   - Run-Time Assurance (RTA) Monitor Architecture & Safety Net switching (e.g., ASTM F3269-17 or domain-equivalent safety monitor pattern).
-   - Domain-specific hazard detection, telemetry monitoring, and contingency guidance standards.
-
-2. Output Requirements:
-   - Generate `STPA_MATRIX.md` under `docs/safety/STPA_MATRIX.md` adhering strictly to the 8-pillar schema:
-     1. System Losses ($L-1..N$)
-     2. System Hazards ($H-1..N$)
-     3. Hierarchical Control Structure Topology (defining System Controllers, Supervisors/RTA Monitors, Actuators, Sensors)
-     4. Unsafe Control Actions ($UCA-1..N$) covering all 4 failure modes: (a) Not providing causes hazard, (b) Providing causes hazard, (c) Providing too early, too late, or out of order, (d) Stopped too soon or applied too long
-     5. Loss Scenarios ($LS-1..N$) & Causal Factors
-     6. Formal Safety Constraints ($SC-1..N$)
-     7. FMECA Criticality Matrix: Component failure modes with 15+ rows, Severity ($S$), Occurrence ($O$), Detection ($D$), and Risk Priority Numbers ($\text{RPN} = S \times O \times D$)
-     8. Domain Safety Framework & Risk Mitigations Table: Risk class classification, integrity levels, and comprehensive mapping of domain safety objectives and mitigations (e.g., ISO 14971/IEC 62304, EN 50128, DNV-GL, ECSS, ISO 3691-4, SORA OSO-01..24)
-   - Include Run-Time Assurance (RTA) Safety Net monitor architecture.
-   - Include MATLAB / Simulink / Stateflow / Embedded Coder model integration baseline hooks and SLDV formal proof properties.
-   - KaTeX / LaTeX Math Formatting Mandate: All multi-line aligned equations MUST be enclosed in `\begin{aligned} ... \end{aligned}` within `$$` delimiters on dedicated lines. Bare alignment tabs `&` outside an alignment environment (`aligned`, `matrix`, `cases`) and `\begin{align*}` environments are strictly forbidden. Markdown Table Math Prohibition Rule: Strictly ban `$ ... $` and `$$ ... $$` LaTeX math delimiters inside table headers, rows, and cells; plain text and Unicode (e.g. `Initial S`, `ΔV`, `λ`, `°C`, `≥`, `≤`, `→`, `10⁻⁶`) must be used instead, with 1:1 column count match between header and delimiter rows.
-
-PROCEED
-```
-
-#### 4.2.3 Worker 0C: SysML v2 Architectural & Safety Model Author Prompt
-
-```text
-Execute `view_file` on `skills/spec-orchestrator/SKILL.md` as your very first step before taking any action.
-
-Repository Classification: UPSTREAM_SPEC_CORE_COMPILER (or DOWNSTREAM_CUSTOMER_PROJECT depending on execution context)
-
-Role: Worker 0C -- SysML v2 Architectural & Safety Model Author
-
-Primary Commercial Toolchain Integration Context:
-This project explicitly declares MATLAB / Simulink / Stateflow / Embedded Coder as the Primary Tier-1 Commercial Toolchain Integration Context (Model-Based Design, Control Law Synthesis, DO-178C C/SPARK Ada code generation).
-
-Directive:
-Formalize the CONOPS (`CONOPS.md`), STPA hazard matrices, FMECA ratings, and domain safety requirements (`STPA_MATRIX.md`) into a canonical SysML v2 textual model and serialized AST handoff contract based on the derived domain architecture.
-
-1. Model Engineering Mandate:
-   - Construct canonical `DEAP_MODEL.sysml` conforming to SysML v2 textual specification standards (`package`, `req`, `part`, `port`, `state`, `satisfy`, `verify`) based on the derived domain architecture.
-   - Define safety statecharts for Run-Time Assurance (RTA) switching logic, contingency operational modes, and fail-safe transitions.
-   - Establish MATLAB / Simulink / Stateflow export compatibility for safety-critical code synthesis.
-   - KaTeX / LaTeX Math Formatting Mandate: Ensure any statechart/mathematical transition guards and formal expressions follow standard escaping and valid KaTeX blocks (all multi-line aligned equations MUST be enclosed in `\begin{aligned} ... \end{aligned}` within `$$` delimiters on dedicated lines; bare alignment tabs `&` outside an alignment environment and `\begin{align*}` are strictly forbidden). Markdown Table Math Prohibition Rule: Strictly ban `$ ... $` and `$$ ... $$` LaTeX math delimiters inside table headers, rows, and cells; plain text and Unicode (e.g. `Initial S`, `ΔV`, `λ`, `°C`, `≥`, `≤`, `→`, `10⁻⁶`) must be used instead, with 1:1 column count match between header and delimiter rows.
-
-2. Output Requirements:
-   - Generate canonical `DEAP_MODEL.sysml` under `schema/DEAP_MODEL.sysml` (or `.pipeline/schema.sysml`).
-   - Generate canonical `pipeline0_handoff_contract.json` under `.pipeline/contracts/pipeline0_handoff_contract.json` for downstream Pipeline 1 Agile projection and Pipeline 2 code generation.
-
-PROCEED
-```
-
-#### 4.2.4 Worker 0D: Interface Specification Worker (Logical ICD & Signal Dictionary) Prompt
-
-```text
-Execute `view_file` on `skills/spec-icd-engineering/SKILL.md` as your very first step before taking any action.
-
-Repository Classification: UPSTREAM_SPEC_CORE_COMPILER (or DOWNSTREAM_CUSTOMER_PROJECT depending on execution context)
-
-Role: Worker 0D -- Interface Specification Worker (Logical ICD & Signal Dictionary)
-
-Primary Commercial Toolchain Integration Context:
-This project explicitly declares MATLAB / Simulink / Stateflow / Embedded Coder as the Primary Tier-1 Commercial Toolchain Integration Context (Model-Based Design, Control Law Synthesis, DO-178C C/SPARK Ada code generation).
-
-Directive:
-Synthesize Level 1C Logical Interface Specifications and Signal Dictionaries from formal SysML v2 AST interface blocks:
-
-1. AST Interface Parsing:
-   - Ingest `.pipeline/schema.sysml` and `.pipeline/schema-digest.json`.
-   - Extract directional ports (`port def`), connection bindings (`connection`), formal interface contracts (`interface def`), and information payloads (`item flow`).
-   - Ingest safety constraints (`SC-1..N`) and hazard allocations from `docs/safety/STPA_MATRIX.md` to map safety-critical signal bounds.
-
-2. Deliverable Generation & Quality Gate:
-   - Generate `docs/interfaces/ICD_01_SYSTEM_INTERFACE_MATRIX.md` containing subsystem boundary graphs, N² communication matrix, and topological port bindings.
-   - Generate `docs/interfaces/ICD_02_MASTER_SIGNAL_DICTIONARY.md` containing signal identifiers (`SIG-*`), data types, units, sampling frequencies, update rates, latency bounds, and fail-safe default values.
-   - Run Gate 23 ICD completeness validation: `./target/release/verify-baseline . --no-domain`.
-   - Register the ICD suite under the `icd` issue label using `./target/release/reconcile-backlog create-issue "<file>" "icd" "<title>"`.
-   - Verify published issue body integrity via live tracker inspection.
-
-Defect Filing Directive:
-If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `./target/release/reconcile-backlog create-issue --label bug` (or `./target/release/verify-baseline check-defect`). Issue auto-closing keywords or issue close commands are strictly forbidden.
-
-PROCEED
-```
-
-### 4.3 Pipeline 1 Agile Backlog Projection Prompts
-
-Execute the following prompts to extract full Agile backlogs (Epics, Level 1C ICD Interface Matrices, BDD User Stories, and UML Use Cases) with closed-loop tracker synchronization:
-
-#### 4.3.1 Worker 1A: Structural Spec Worker (Epics & Features) Prompt
-
-```text
-Execute `view_file` on `skills/schema-specification-engineering/SKILL.md` as your very first step before taking any action.
-
-Repository Classification: DOWNSTREAM_CUSTOMER_PROJECT (or UPSTREAM_SPEC_CORE_COMPILER depending on execution context)
-
-Role: Worker 1A -- Structural Specification Worker (Epics & Features)
-
-Primary Commercial Toolchain Integration Context:
-This project explicitly declares MATLAB / Simulink / Stateflow / Embedded Coder as the Primary Tier-1 Commercial Toolchain Integration Context (Model-Based Design, Control Law Synthesis, DO-178C C/SPARK Ada code generation).
-
-Directive:
-Transform structural schemas and SysML v2 AST models into formal Agile Epics and Features adhering to OOA/OOD principles:
-
-1. AST Parsing & Subsystem Extraction:
-   - Ingest canonical SysML v2 model (`.pipeline/schema.sysml`) and schema digest (`.pipeline/schema-digest.json`).
-   - Parse all subsystem `package` declarations to identify Epic boundaries (`docs/epics/epic-*.md`).
-   - Parse all `part def` (structural components) and `item def` (data payloads) elements to identify Feature boundaries (`docs/features/feat-*.md`).
-   - Dispatch fresh context-isolated subagents for each individual Epic and Feature with YAML frontmatter declaring `generation_mode: "subagent"`.
-
-2. Local Validation & Issue Registration:
-   - Execute the local model coverage linter: `./target/release/verify-baseline . --spec-only`.
-   - Register Features first via `./target/release/reconcile-backlog create-issue "<file>" "feature" "<title>"`.
-   - Verify live published payload on the issue tracker (`gh issue view <ID> --json body` or `glab issue view <ID>`).
-   - Inject verified Feature Issue IDs into Epic tasklists.
-   - Register Epics via `./target/release/reconcile-backlog create-issue "<file>" "epic" "<title>"`.
-
-Defect Filing Directive:
-If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `./target/release/reconcile-backlog create-issue --label bug` (or `./target/release/verify-baseline check-defect`). Issue auto-closing keywords or issue close commands are strictly forbidden.
-
-PROCEED
-```
-
-
-#### 4.3.2 Worker 1B: Behavioral Spec Worker (User Stories & Statecharts) Prompt
-
-```text
-Execute `view_file` on `skills/spec-user-story-engineering/SKILL.md` as your very first step before taking any action.
-
-Repository Classification: DOWNSTREAM_CUSTOMER_PROJECT (or UPSTREAM_SPEC_CORE_COMPILER depending on execution context)
-
-Role: Worker 1B -- Behavioral Specification Worker (User Stories & Statecharts)
-
-Primary Commercial Toolchain Integration Context:
-This project explicitly declares MATLAB / Simulink / Stateflow / Embedded Coder as the Primary Tier-1 Commercial Toolchain Integration Context (Model-Based Design, Control Law Synthesis, DO-178C C/SPARK Ada code generation).
-
-Directive:
-Extract Behavior-Driven Development (BDD) User Stories, UML Sequence Lifelines, and Stateflow transition triggers from SysML v2 behavioral AST nodes:
-
-1. Behavioral AST Ingestion:
-   - Ingest `.pipeline/schema.sysml` and operational text.
-   - Parse `action def` (computations & transformations), `state def` (lifecycle states & transition guards), `port def` (message triggers), and `interaction def` (lifeline sequences).
-   - Extract algorithmic calculation stories for dynamic computations and temporal expiration stories for state lifecycles.
-   - Map acceptance criteria BDD scenarios to formal SysML `test case def` elements with `verify requirement` tags.
-
-2. Deliverable Generation & Issue Registration:
-   - Dispatch fresh context-isolated subagents per User Story (`docs/user-stories/us-*.md`) with YAML frontmatter (`generation_mode: "subagent"`).
-   - Execute local model coverage linter: `./target/release/verify-baseline . --spec-only`.
-   - Register User Stories via `./target/release/reconcile-backlog create-issue "<file>" "user-story" "<title>"`.
-   - Verify live published payload on the issue tracker (`gh issue view <ID> --json body` or `glab issue view <ID>`).
-
-Defect Filing Directive:
-If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `./target/release/reconcile-backlog create-issue --label bug` (or `./target/release/verify-baseline check-defect`). Issue auto-closing keywords or issue close commands are strictly forbidden.
-
-PROCEED
-```
-
-#### 4.3.3 Worker 1C: Operational Spec Worker (Use Cases & Realization Matrices) Prompt
-
-```text
-Execute `view_file` on `skills/spec-usecase-engineering/SKILL.md` as your very first step before taking any action.
-
-Repository Classification: DOWNSTREAM_CUSTOMER_PROJECT (or UPSTREAM_SPEC_CORE_COMPILER depending on execution context)
-
-Role: Worker 1C -- Operational Spec Worker (Use Cases & Realization Matrices)
-
-Primary Commercial Toolchain Integration Context:
-This project explicitly declares MATLAB / Simulink / Stateflow / Embedded Coder as the Primary Tier-1 Commercial Toolchain Integration Context (Model-Based Design, Control Law Synthesis, DO-178C C/SPARK Ada code generation).
-
-Directive:
-Derive formal UML System Use Cases directly from SysML v2 `use case def` AST blocks and system interaction scenarios:
-
-1. Use Case AST Ingestion:
-   - Ingest `.pipeline/schema.sysml`, `docs/features/`, and `docs/user-stories/`.
-   - Extract `use case def` AST nodes, identifying `subject` (`part def`), typed `actor` ports, `objective`, and `include`/`extend` relations.
-   - Maintain 1:1 Use Case Def mapping with Primary/Secondary Actors, Preconditions, Trigger, Main Success Scenario, Alternate/Exception Flows (covering 100% of validation constraints across realized features), and Postconditions (Success & Failure Guarantees).
-   - Construct UML Use Case diagrams and UML State Machine diagrams.
-
-2. Realization Matrix & Registration:
-   - Construct `## Realization Matrix` resolving specific, unique tracker Issue IDs for each intersecting User Story and Feature.
-   - Execute local model coverage check: `./target/release/verify-baseline . --spec-only`.
-   - Register Use Cases via `./target/release/reconcile-backlog create-issue "<file>" "use-case" "<title>"`.
-   - Verify live published payload on the issue tracker (`gh issue view <ID> --json body` or `glab issue view <ID>`).
-
-Defect Filing Directive:
-If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `./target/release/reconcile-backlog create-issue --label bug` (or `./target/release/verify-baseline check-defect`). Issue auto-closing keywords or issue close commands are strictly forbidden.
-
-PROCEED
-```
-
-#### 4.3.4 Worker 1D: WBS & Work Package Decomposition Spec Worker Prompt
-
-```text
-Execute `view_file` on `skills/spec-wbs-engineering/SKILL.md` as your very first step before taking any action.
-
-Repository Classification: DOWNSTREAM_CUSTOMER_PROJECT (or UPSTREAM_SPEC_CORE_COMPILER depending on execution context)
-
-Role: Worker 1D -- WBS & Work Package Decomposition Spec Worker
-
-Primary Commercial Toolchain Integration Context:
-This project explicitly declares MATLAB / Simulink / Stateflow / Embedded Coder as the Primary Tier-1 Commercial Toolchain Integration Context (Model-Based Design, Control Law Synthesis, DO-178C C/SPARK Ada code generation).
-
-Directive:
-Synthesize MIL-STD-881E Work Breakdown Structures (WBS), Technical Realization Registers, and Enterprise Project Management Exports (Jira, Monday.com, MS Project CSV and JSON AST) from SysML AST, ConOps, Safety Matrices, and Agile Backlog items:
-
-1. WBS & Enterprise Realization Synthesis:
-   - Ingest `.pipeline/schema.sysml`, `docs/conops/`, `docs/safety/`, `docs/epics/`, `docs/features/`, `docs/user-stories/`, and `docs/use-cases/`.
-   - Synthesize the complete 5-tier WBS hierarchy and 7 concrete Model-Based Design (MBD) work packages per feature (`WP-xxx-SPEC`, `WP-xxx-MAT-PARAM`, `WP-xxx-SL-BLD`, `WP-xxx-PY-DOM`, `WP-xxx-PY-ENG`, `WP-xxx-TST`, `WP-xxx-REP`).
-   - Construct the authoritative 7-Column End-to-End Traceability Matrix linking SysML components, Feature specs, User Stories, MATLAB/Simulink models, discrete 250 Hz engines, semantic acceptance verification suites, and DO-178C/DO-331 simulation evidence.
-   - Run the deterministic WBS suite validation gate: `./target/release/verify-baseline . --strict`.
-
-2. Deliverable Generation & Issue Registration:
-   - Generate `docs/management/WBS_DELIVERABLES_SUITE.md` with CommonMark metadata table.
-   - Generate multi-platform export `docs/management/wbs_export_jira_monday_ms_project.csv` (RFC 4180 compliant with Jira, Monday.com, and MS Project field mappings).
-   - Generate validated machine-readable JSON AST `docs/management/wbs_export.json`.
-   - Register the WBS suite under the `wbs` issue label using `./target/release/reconcile-backlog create-issue "docs/management/WBS_DELIVERABLES_SUITE.md" "wbs" "<title>"`.
-   - Verify published issue body integrity via live tracker inspection (`gh issue view <ID> --json body` or `glab issue view <ID>`).
-
-Defect Filing Directive:
-If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `./target/release/reconcile-backlog create-issue --label bug` (or `./target/release/verify-baseline check-defect`). Issue auto-closing keywords or issue close commands are strictly forbidden.
-
-PROCEED
+In populated customer flight-safety workspaces cloned from this template, execute the five pipeline stages in order:
+
+```sh
+# Stage 1: Seal canonical SysML v2 + RAAML v1 IR snapshot (or lift brownfield Markdown via --format markdown --from-docs)
+./.deap/bin/ingest-sysml seal --workspace . --schema-dir schema --out-snapshot .deap/ir.snapshot.bin
+
+# Stage 2: Project deterministic CONOPS.md, MISSION_INTENT.md, and R_conops receipt
+./.deap/bin/assemble-conops project --workspace . --snapshot .deap/ir.snapshot.bin --out-dir docs/conops
+
+# Stage 3: Run 5-pass safety compiler and emit modular #![no_std] Rust contracts + Kani harnesses
+./.deap/bin/compile-sysml build \
+  --workspace . \
+  --snapshot .deap/ir.snapshot.bin \
+  --conops-receipt .deap/conops.receipt.json \
+  --out-docs docs \
+  --out-contracts crates/flight-core/src/generated \
+  --out-kani crates/flight-core/src/kani_generated \
+  --emit-modular-rust crates/flight-core/src/deap_modular
+
+# Stage 4: Project Agile/WBS specifications and run 3-way Merkle tracker reconciliation
+./.deap/bin/reconcile-backlog project --workspace . --snapshot .deap/ir.snapshot.bin --docs-dir docs
+./.deap/bin/reconcile-backlog sync --workspace . --snapshot .deap/ir.snapshot.bin --docs-dir docs --schema-dir schema --provider offline
+
+# Stage 5: Run full TQL-5 independent baseline audit across populated domain artifacts
+./.deap/bin/verify-baseline audit --workspace . --schema-dir schema --docs-dir docs --snapshot .deap/ir.snapshot.bin
 ```
 
 ### 4.4 Multi-Provider Backlog Reconciliation Commands
 
-Execute backlog reconciliation and model parity verification across your target VCS platform or offline air-gapped environment:
+```sh
+# Option A: Offline Air-Gapped / Deterministic Local Store (.deap/offline-tracker.json)
+./.deap/bin/reconcile-backlog sync --workspace . --provider offline
 
-#### 4.4.1 Option A: GitLab SaaS Reconciliation
-```bash
-./target/release/reconcile-backlog --provider gitlab
+# Option B: GitHub Issues Reconciliation
+./.deap/bin/reconcile-backlog sync --workspace . --provider github --project "<owner>/<repo>" --token "$GITHUB_TOKEN"
+
+# Option C: GitLab SaaS or Self-Managed SCIF Air-Gapped Reconciliation
+./.deap/bin/reconcile-backlog sync \
+  --workspace . \
+  --provider gitlab \
+  --endpoint "https://gitlab.internal.example/api/v4" \
+  --project "<group>/<repo>" \
+  --ca-bundle /path/to/ca-bundle.pem \
+  --token "$GITLAB_TOKEN"
 ```
-
-#### 4.4.2 Option B: GitLab Self-Managed / SCIF Air-Gapped Reconciliation
-```bash
-./target/release/reconcile-backlog --provider gitlab --gitlab-url https://gitlab.internal.defense.gov --project uas-safety/uav-010
-```
-
-#### 4.4.3 Option C: GitHub Issues Reconciliation
-```bash
-./target/release/reconcile-backlog --provider github
-```
-
-#### 4.4.4 Option D: Offline Verification & 23-Gate Parity Lock
-```bash
-# Closed-loop reverse SysML v2 AST synchronization
-./target/release/compile-sysml --reverse-sync
-
-# Offline backlog checklist and status synchronization
-./target/release/reconcile-backlog --offline
-
-# 23-Gate Model Coverage & UML Compliance Lock
-./target/release/verify-baseline . --spec-only
-```
-
-### 4.5 Pipeline 2 Autonomous Feature Implementation Prompts
-
-Execute the following prompts to drive feature implementation and two-path (dual-track) simulation verification through context-isolated TDD micro-tasks:
-
-#### 4.5.1 Worker 2A.1 / Synthesis Driver: Flutter Feature Implementation Prompt
-
-```text
-Execute `view_file` on `skills/feature-driven-implementation/SKILL.md` as your very first step before taking any action.
-
-Repository Classification: DOWNSTREAM_CUSTOMER_PROJECT
-
-Role: Worker 2A.1 -- Flutter Feature-Driven Implementation Specialist
-
-Primary Commercial Toolchain Integration Context:
-This project explicitly declares MATLAB / Simulink / Stateflow / Embedded Coder as the Primary Tier-1 Commercial Toolchain Integration Context (Model-Based Design, Control Law Synthesis, DO-178C C/SPARK Ada code generation).
-
-Target Directory & Confinement Invariant:
-All source code, assets, configurations, and tests MUST reside exclusively under `app_flutter/`. Writing source code or configuration files at repository root is strictly prohibited.
-
-Architecture Pattern:
-MVVM (Model-View-ViewModel) layered architecture. Views are stateless widgets consuming ViewModels via dependency injection. ViewModels manage domain state and event streams. Domain entities are decoupled from presentation. All persistence transactions must interact exclusively with abstract repositories resolved dynamically at bootstrap.
-
-The 15 Mandatory Domain Engineering Standards:
-1. Result<T> Over Exceptions: All fallible domain operations and repository methods MUST return explicit Result<T> signatures (Success<T> or Failure<T>) rather than throwing untyped runtime exceptions.
-2. Sealed Class Hierarchies: Domain states, algebraic data types, events, and error hierarchies MUST use sealed class hierarchies (`sealed class`) to enforce exhaustive pattern matching.
-3. Named Constructors with Validation: Complex domain entities MUST declare private or named constructors performing assertion and validation logic to guarantee invalid objects cannot be instantiated.
-4. Typed Errors per Domain: Every domain module MUST define explicit, strongly-typed error classes extending a sealed domain error base (`DomainError`) rather than returning raw error strings or untyped exceptions.
-5. @immutable Annotation Mandatory: Every domain class, entity, value object, event, and state container MUST be annotated with `@immutable` to enforce compile-time immutability.
-6. Interface Segregation: Domain interfaces and repository contracts MUST be narrow, lean, and highly cohesive so clients do not depend on unused methods.
-7. Zero dynamic: The use of `dynamic` or untyped `Object?` in domain signatures, interfaces, properties, or variables is strictly prohibited. All data flows must be strongly typed.
-8. BDD Test Naming: Unit and integration test names for domain logic MUST use explicit BDD behavior-driven naming patterns (`given_when_then` or `should [behavior] when [condition]`).
-9. UML Traceability Tags Mandatory: Every public domain class, interface, mixin, extension, or typedef header MUST include a DartDoc traceability tag (`/// Realises: [SpecName/ClassName]`) referencing its underlying specification or UML classifier.
-10. Public Member Docstrings Mandatory: Full DartDoc comments (`///`) are mandatory for every public class, interface, method, function, constructor, getter, and property in the domain layer.
-11. const Constructors: Immutable domain classes and value objects with final fields MUST declare const constructors to support compile-time constant canonicalization.
-12. Value Equality: All domain value objects and entities MUST override `operator ==` and `hashCode` (or extend Equatable) to guarantee value-based equality.
-13. Typedefs for Callbacks: Callback functions, listener signatures, and event handlers MUST be declared as explicit typedef aliases rather than raw inline function types.
-14. Private Constructors with Public Factories: Domain entities requiring construction validation MUST restrict direct instantiation via private constructors (`._()`) and expose public factory constructors.
-15. Separation of Serialization: Domain models MUST remain completely decoupled from JSON, database, or network serialization logic (`fromJson`/`toJson`). Serialization logic MUST reside strictly in separate DTOs or data layer adapters.
-
-Execution Standards & Governance Mandates:
-- Adopt the feature-driven-implementation skill by reading `.pipeline/constitution.md`, `.pipeline/ACTIVE_RULES_BUNDLE.md`, and `.pipeline/profiles/flutter.md`.
-- Section 1.9 Zero-Mocking Live Persistence Mandate: All client-side application targets MUST connect to a live persistent database, emulator, or local register map at runtime; in-memory mocks are strictly prohibited.
-- 3-Layer Definition of Done (DoD):
-  1. Layer 1: Domain State & Signal Model -- Strongly-typed domain models, value objects, and repository interfaces.
-  2. Layer 2: Logic & Safety State Management -- ViewModels, statecharts, reactive bindings, and event streams.
-  3. Layer 3: Display & Actuator Interface Binding -- High-density Flutter widgets, container queries, and BDD User Story Widget tests.
-- TDD RED-GREEN-REFACTOR cycle: Write failing test first, verify failure, write minimal passing code, verify pass, refactor.
-
-Verification Commands:
-cd app_flutter && flutter analyze && flutter test
-
----GOVERNANCE-END---
-
-Implement prioritized Feature [Issue Number, e.g. #1] adhering strictly to the above standards.
-
-PROCEED
-```
-
-#### 4.5.2 Worker 2A.2 / Synthesis Driver: ROS2 / PX4 Feature Implementation Prompt
-
-```text
-Execute `view_file` on `skills/feature-driven-implementation/SKILL.md` as your very first step before taking any action.
-
-Repository Classification: DOWNSTREAM_CUSTOMER_PROJECT
-
-Role: Worker 2A.2 -- Real-Time Robotics & Autopilot Implementation Specialist
-
-Primary Commercial Toolchain Integration Context:
-This project explicitly declares MATLAB / Simulink / Stateflow / Embedded Coder as the Primary Tier-1 Commercial Toolchain Integration Context (Model-Based Design, Control Law Synthesis, DO-178C C/SPARK Ada code generation).
-
-Platform Profiles & Target Standards:
-Follow `.pipeline/profiles/ros2_cpp.md` (ROS 2 Humble/Iron/Jazzy, `rclcpp_lifecycle::LifecycleNode`, zero dynamic allocations in real-time loops via `rttest`, hardened QoS `RELIABILITY_RELIABLE`) and `.pipeline/profiles/px4_module.md` (PX4 Autopilot Firmware, `ModuleBase<T>`, uORB pub/sub messaging, ASTM F3269-17 Run-Time Assurance monitors). Hardware-in-the-loop (HIL) tests must validate real-time execution bounds, sensor jitter tolerances, and fail-safe actuation responses against simulated PX4 hardware targets.
-
-Execution Standards & Governance Mandates:
-- Adopt the feature-driven-implementation skill by reading `.pipeline/constitution.md`, `.pipeline/ACTIVE_RULES_BUNDLE.md`, and the target platform profile.
-- Architecture Pattern: Real-time ROS2 lifecycle nodes and PX4 uORB modules with deterministic execution semantics.
-- 3-Layer Definition of Done: Domain State Model, Lifecycle State Machine & Safety Monitor, Middleware Binding (uORB / ROS2 Topic) with automated unit, integration, and hardware-in-the-loop tests.
-- TDD RED-GREEN-REFACTOR cycle with context-isolated micro-tasks.
-
-Verification Commands:
-colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
-colcon test --event-handlers console_direct+
-
----GOVERNANCE-END---
-
-Implement prioritized Feature [Issue Number, e.g. #1] adhering strictly to the above standards.
-
-PROCEED
-```
-
-#### 4.5.3 Worker 2B / Simulation Driver: Two-Path (Dual-Track) Simulation & Digital Twin Verification Prompt
-
-```text
-Execute `view_file` on `skills/feature-driven-implementation/SKILL.md` as your very first step before taking any action.
-
-Repository Classification: DOWNSTREAM_CUSTOMER_PROJECT
-
-Role: Worker 2B -- Two-Path (Dual-Track) Simulation & Digital Twin Verification Driver
-
-Primary Commercial Toolchain Integration Context:
-This project explicitly declares MATLAB / Simulink / Stateflow / Embedded Coder as the Primary Tier-1 Commercial Toolchain Integration Context (Model-Based Design, Control Law Synthesis, DO-178C C/SPARK Ada code generation).
-
-Governance Preamble & Execution Directive:
-Adopt the feature-driven-implementation skill by reading `.pipeline/constitution.md`, `.pipeline/ACTIVE_RULES_BUNDLE.md`, and `docs/architecture/blueprints/SYSML_SSOT_BIDIRECTIONAL_SYNCHRONIZATION_ARCHITECTURE.md`.
-
-Execute Two-Path (Dual-Track) Model-Based Design (MBD) simulation synthesis and digital twin verification for Feature [Issue Number, e.g. #1]:
-
-1. Track A (Native MATLAB / Simulink / Stateflow Synthesis):
-   - Programmatic Model Construction: Deliver `models/scripts/build_<feature_slug>_model.m` to programmatically synthesize native `.slx` block diagrams and Stateflow charts using official MATLAB APIs.
-   - Parameter & Signal Dictionaries: Deliver physical parameter dictionary `models/matlab/<feature_slug>_params.m` and Simulink Data Dictionary `models/matlab/<feature_slug>_data.sldd`.
-   - Solver & Synthesis Baseline: Configure models for deterministic fixed-step discrete solvers (`FixedStepDiscrete`, $dt = 0.004\,\text{s}$ / 250 Hz) and Embedded Coder DO-178C C / SPARK Ada code synthesis.
-
-2. Track B (Headless CI Digital Twin Engine):
-   - License-Free Discrete Execution Engine: Deliver standalone native Rust simulation engine (`models/rust_twin/<feature_slug>_domain.rs` and `models/rust_twin/<feature_slug>_engine.rs`) executing at identical discrete loop rate ($dt$) with exact transition guards, polynomial transfer curves, and 6-DOF kinematics.
-   - Zero License Blocker CI Harness: Deliver automated regression test suite verified via `cargo test --workspace` running 100% offline in containerized CI environments without MathWorks licenses.
-
-3. Mathematical & Discrete Equivalence Mandate:
-   - Numerical Tolerance Verification: Guarantee state vector and output trajectory error between Track A reference and Track B digital twin satisfies $\|x_{\text{Simulink}} - x_{\text{DigitalTwin}}\|_\infty \le 10^{-6}$.
-   - Formal DO-331 Verification Report: Generate comprehensive verification report `docs/reports/simulink_results/<FEATURE-ID>_simulation_results.md` detailing MC/DC coverage mapping, transition truth tables, fault-injection scenarios, and numerical parity logs.
-
-Defect Filing Directive:
-If any compiler fault, schema inconsistency, or invariant violation is discovered, you are strictly forbidden from filing raw issues directly. You MUST dispatch a fresh context-isolated subagent with `skills/adversarial-code-auditor/SKILL.md` to perform the 5-pillar audit, generate the verified 7-section defect dossier, and submit it via `./target/release/reconcile-backlog create-issue --label bug` (or `./target/release/verify-baseline check-defect`). Issue auto-closing keywords or issue close commands are strictly forbidden.
-
-PROCEED
-```
-
-#### 4.5.4 Two-Path MBD Artifact & Deliverable Hierarchy
-
-Every feature containing control laws, operating dynamics, physical plant estimators, or safety state machines delivers the canonical two-path MBD artifact suite:
-
-```text
-models/
-├── scripts/
-│   └── build_<feature_slug>_model.m        # Track A: Programmatic Simulink/Stateflow builder script
-├── matlab/
-│   ├── <feature_slug>_params.m            # Track A: MATLAB physical plant & control parameters
-│   └── <feature_slug>_data.sldd           # Track A: Simulink Data Dictionary (data types & signals)
-└── rust_twin/
-    ├── <feature_slug>_domain.rs           # Track B: Strongly-typed domain models & state vectors
-    └── <feature_slug>_engine.rs           # Track B: Standalone discrete-time simulation engine
-
-docs/reports/simulink_results/
-└── <FEATURE-ID>_simulation_results.md     # Formal DO-331 simulation & numerical parity report
-```
-
-##### Dual-Track Artifact Descriptions:
-
-1. **`models/scripts/build_<feature_slug>_model.m` (Track A Builder)**:
-   Programmatically constructs native MATLAB / Simulink (`.slx`) block diagrams and Stateflow charts via official MATLAB APIs (`new_system`, `add_block`, `Stateflow.Data`, `Stateflow.State`, `Stateflow.Transition`). Configures deterministic discrete fixed-step solvers (`FixedStepDiscrete`) and Embedded Coder DO-178C C / SPARK Ada code synthesis.
-
-2. **`models/matlab/<feature_slug>_params.m` & `.sldd` (Track A Dictionaries)**:
-   Declares physical plant constants, control gains, rate limits, sensor noise variances, and discrete sample time ($dt = 0.004\,\text{s}$ / 250 Hz) in typed MATLAB structures and Simulink Data Dictionaries.
-
-3. **Track B Digital Twin Engine**:
-   License-free, headless discrete simulation engine executing identical algebraic formulations, cubic polynomial blending curves ($\lambda(\tau) = 3\tau^2 - 2\tau^3$), and safety transition guards. Exposes typed state vectors and `step(dt, inputs) -> outputs` execution interface.
-
-4. **Automated CI Verification Suite (`cargo test --workspace`)**:
-   Native Rust test suite executing offline in CI/CD runners without MathWorks license blockers. Validates nominal control tracks, fault-injection responses, emergency safety transitions, and state invariants.
-
-5. **`docs/reports/simulink_results/<FEATURE-ID>_simulation_results.md` (DO-331 Verification Report)**:
-   Formal DO-178C / DO-331 verification deliverable documenting mathematical equivalence, step-by-step state transition logs, fault injection test results, and numerical tolerance parity ($\le 10^{-6}$).
 
 ---
 
-## 5. Verification & Quality Gates
+## 5. Avionic Flight Safety & Two-Path (Dual-Track) MBD Synthesis Architecture
 
-Execute baseline and safety governance verification:
+### 5.1 Two-Path (Dual-Track) Simulink / Embedded Coder & Rust Digital Twin Hierarchy
 
-```bash
-# Run downstream conformance gate
-./target/release/verify-baseline . --no-domain
+Every avionic flight-safety feature containing inner-loop control laws, flight envelope protection monitors, simplex RTA switching logic, or state estimators delivers the canonical two-path MBD artifact suite governed by [NON_RUST_MULTI_TOOLCHAIN_PROFILES.md](./downstream-profiles/profile-non-rust-targets/NON_RUST_MULTI_TOOLCHAIN_PROFILES.md):
+
+```text
+models/
++-- scripts/
+|   +-- build_<feature_slug>_model.m        # Track A: Programmatic Simulink/Stateflow builder script
++-- matlab/
+|   +-- <feature_slug>_params.m             # Track A: MATLAB physical plant & control parameters
+|   +-- <feature_slug>_data.sldd            # Track A: Simulink Data Dictionary (data types & signals)
++-- rust_twin/
+    +-- <feature_slug>_domain.rs            # Track B: Strongly-typed domain models & state vectors
+    +-- <feature_slug>_engine.rs            # Track B: Standalone discrete-time simulation engine
+
+docs/reports/simulink_results/
++-- <FEATURE-ID>_simulation_results.md      # Formal DO-331 simulation & numerical parity report
 ```
+
+1. **Track A (`models/scripts/build_<feature_slug>_model.m` + `.sldd`)**: Programmatically constructs native MATLAB / Simulink (`.slx`) block diagrams and Stateflow charts configured for deterministic fixed-step discrete solvers (`FixedStepDiscrete`, $dt = 0.004\,\text{s}$ / 250 Hz) and Embedded Coder DO-178C C / SPARK Ada code synthesis.
+2. **Track B (`models/rust_twin/`)**: License-free headless discrete Rust digital twin executing identical algebraic formulations and safety transition guards in containerized CI (`cargo test --workspace`) with infinity-norm trajectory equivalence $\|x_{\mathrm{Simulink}} - x_{\mathrm{DigitalTwin}}\|_\infty \le 10^{-6}$.
+3. **Formal DO-331 Verification Report (`docs/reports/simulink_results/<FEATURE-ID>_simulation_results.md`)**: Documents MC/DC coverage mapping, state transition truth tables, fault-injection logs, and Track A/B numerical parity.
+
+### 5.2 Ring-3 Avionic Station & Ground Control HMI (`app_flutter/`)
+
+Ground station and flight test instrumentation HMIs reside strictly under `app_flutter/` and follow [DART_FLUTTER_CODING_STANDARD.md](./downstream-profiles/profile-dart-flutter-hmi/DART_FLUTTER_CODING_STANDARD.md), [SAFETY_CRITICAL_REALTIME_UI_BLUEPRINT.md](./downstream-profiles/profile-dart-flutter-hmi/SAFETY_CRITICAL_REALTIME_UI_BLUEPRINT.md), and [DART_RUST_FFI_SYNTHESIS_PROFILE.md](./downstream-profiles/profile-dart-flutter-hmi/DART_RUST_FFI_SYNTHESIS_PROFILE.md).

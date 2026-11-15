@@ -1,67 +1,45 @@
+# DEAP-03 Downstream Consumer Workspace .gitignore
+# Upstream Baseline: gintatkinson/deap03@e75d23d412fa88f5ecc9683c0615c3303d43bf00 (stage-10-complete)
 
-!/.agents/
-!/.agents/**
-!/.pipeline/
-!/.pipeline/**
-!/rules/
-!/rules/**
-!/scripts/
-!/scripts/**
-!/skills/
-!/skills/**
-# 1453 tracked files pinned to Python 3.9.6 and to /Applications/Xcode.app paths,
-# Copyright Gint Atkinson, gint.atkinson@gmail.com
-# Credentials & local env configuration
-# Diagnostics and reproduction payloads
-# Node dependencies & build artifacts
-# Pipeline infrastructure (whitelisted by setup_git_hooks.py)
-# Virtualenvs are per-machine and must never be committed. The previous one was
-# so it was broken on every machine but one and shipped an EOL runtime (#294).
-*.egg-info/
-*.pyc
-*.pyo
-*define*.json
+# OS, Editor, and Local Environment Artifacts
 .DS_Store
-.agents/teamwork/
-.dart_tool/
 .env
 .env.*
 .env.local
-.flutter-plugins*
-.pipeline/diagnostics/
-.pub/
-.pytest_cache/
-.tessl/
-.tmp-pipeline-install
-.venv/
-__pycache__/
-app_flutter_release.zip
-benchmark_results.jsonl
-build/
+*define*.json
 config.json
+scratch/
+
+# Build, Cargo, Node, Python, and Flutter Artifacts
+/target/
+build/
 dist/
 node_modules/
 package-lock.json
-scratch/
-venv/
-# Ignore intermediate Cargo build directories
-/target/debug
-/target/release/build
-/target/release/deps
-/target/release/.fingerprint
-/target/release/incremental
-/target/*
-/target/release/*
-
-# Whitelist release directory and exact Tier 0 binaries
-!/target/release/
-!/target/release/verify-baseline
-!/target/release/compile-sysml
-!/target/release/ingest-sysml
-!/target/release/assemble-conops
-!/target/release/reconcile-backlog
-
+.dart_tool/
+.flutter-plugins*
+.pub/
 app_flutter/build/
 app_flutter/.dart_tool/
 app_flutter/macos/Pods/
 app_flutter/macos/Flutter/ephemeral/
+app_flutter_release.zip
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+benchmark_results.jsonl
+
+# DEAP-03 Ephemeral Caches and Atomic Staging Paths
+.deap/cache/
+.deap/*.staging
+.deap/*.prev
+
+# Tracked Signed DEAP-03 B_5 Bundle and UpdateManifest
+!.deap/
+!.deap/bin/
+!.deap/bin/*
+!.deap/update-manifest.json
